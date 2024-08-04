@@ -1,0 +1,59 @@
+﻿<Window x:Class="cw2tools.FontWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <RadioButton x:Name="NormalFont_CB" Tag="0" Content="普通字体 14(0xE)" Checked="RadioButton_Checked" IsChecked="True"/>
+            <RadioButton x:Name="Little8_CB" Tag="1" Content="小字体 8" Checked="RadioButton_Checked"/>
+            <RadioButton x:Name="Little10_CB" Tag="2" Content="小字体 10(0xA)" Checked="RadioButton_Checked"/>
+        </StackPanel>
+        <StackPanel Visibility="{Binding ElementName=NormalFont_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+            <CheckBox x:Name="ABFix" Content="CNX V.A V.B 修复" Checked="ABFix_Checked" Unchecked="ABFix_Checked"/>
+            <TextBlock Text="00:"/>
+            <TextBox x:Name="NE_00_Input" Text="????"/>
+            <StackPanel Visibility="Visible" x:Name="VAFixDis">
+                <TextBlock Text="Fx:"/>
+                <TextBox x:Name="NE_Fx_Input" Text="????"/>
+            </StackPanel>
+            <StackPanel Visibility="Collapsed" x:Name="VAFixEn">
+                <TextBlock Text="F0:"/>
+                <TextBox x:Name="VA_F0_Input" Text="????"/>
+                <TextBlock Text="F1:"/>
+                <TextBox x:Name="VA_F1_Input" Text="????"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Visibility="{Binding ElementName=Little8_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+            <TextBlock Text="00:"/>
+            <TextBox x:Name="L8_00_Input" Text="????"/>
+        </StackPanel>
+        <StackPanel Visibility="{Binding ElementName=Little10_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+            <TextBlock Text="00:"/>
+            <TextBox x:Name="LA_00_Input" Text="????"/>
+            <TextBlock Text="Fx:"/>
+            <TextBox x:Name="LA_Fx_Input" Text="????"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11"/>
+        </StackPanel>
+        <TextBlock Text="字符代码:"/>
+        <TextBox x:Name="IndexInput" Text="0"/>
+        <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1"/>
+        <TextBlock Text="预览:"/>
+        <Grid Height="64" HorizontalAlignment="Left">
+            <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="导出" HorizontalAlignment="Left" Click="Button_Click_2"/>
+            <Button Content="替换" HorizontalAlignment="Left" Click="Button_Click_7"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="全部导出" HorizontalAlignment="Left" Click="Button_Click_8"/>
+            <Button Content="全部替换" HorizontalAlignment="Left" Click="Button_Click_3"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

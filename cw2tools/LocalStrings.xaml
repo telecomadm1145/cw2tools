@@ -1,0 +1,24 @@
+﻿<Window x:Class="cw2tools.LocalStrings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
+        mc:Ignorable="d"
+        Title="LocalStrings" Height="450" Width="800">
+    <StackPanel>
+        <TextBlock Text="语言字节查找表偏移"/>
+        <TextBox x:Name="LUT" HorizontalAlignment="Left" Width="100"/>
+        <Button Content="查找" HorizontalAlignment="Left" Click="Button_Click"/>
+        <TextBlock Text="语言字节"/>
+        <TextBox x:Name="LanguageCode" HorizontalAlignment="Left" Width="100" Text="0"/>
+        <TextBlock Text="字符串表偏移"/>
+        <TextBox x:Name="StringLut" HorizontalAlignment="Left" Width="100"/>
+        <Button Content="查表" HorizontalAlignment="Left" Click="Button_Click_1"/>
+        <Button Content="导出 csv" HorizontalAlignment="Left" Click="Button_Click_2"/>
+        <TextBlock Text="字符串池基址"/>
+        <TextBox x:Name="StringsBase" HorizontalAlignment="Left" Width="100"/>
+        <Button Content="导入 csv（字符串池法）" HorizontalAlignment="Left" Click="Button_Click_3"/>
+        <!--<Button Content="导入 csv（就地替换）" HorizontalAlignment="Left"/>-->
+    </StackPanel>
+</Window>

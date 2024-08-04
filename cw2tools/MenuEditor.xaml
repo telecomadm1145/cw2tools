@@ -1,0 +1,38 @@
+﻿<Window x:Class="cw2tools.MenuEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
+        xmlns:localc="clr-namespace:cw2tools.CasioInternal"
+        mc:Ignorable="d"
+        Title="MenuEditor" Height="450" Width="800">
+    <ScrollViewer>
+        <StackPanel>
+            <Button Content="加载" Click="Button_Click"/>
+            <ItemsControl Name="MenuItemsControl">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type localc:CMenu}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding id,StringFormat={}0x{0:X4}}" FontSize="18"/>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type localc:Item}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding key,StringFormat={}0x{0:X4}}" Width="80"/>
+                                            <TextBlock Text="{Binding condition,StringFormat={}0x{0:X2}}" Width="40"/>
+                                            <TextBlock Text="{Binding text_ptr2,StringFormat={}0x{0:X4}}" Width="80"/>
+                                            <TextBlock Text="{Binding text_local0}" Width="200"/>
+                                            <TextBlock Text="{Binding text_local1}" Width="200"/>
+                                            <Button Tag="{Binding}" Click="Button_Click_1" Content="编辑" Width="60"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

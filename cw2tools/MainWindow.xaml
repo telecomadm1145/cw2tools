@@ -1,0 +1,21 @@
+﻿<Window x:Class="cw2tools.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="打开 Rom" HorizontalAlignment="Left" Click="OpenRom"/>
+            <Button Content="保存 Rom" HorizontalAlignment="Left" Click="SaveRom"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="编辑菜单" Click="Button_Click"/>
+            <Button Content="编辑字体" Click="Button_Click_1"/>
+            <Button Content="编辑主界面" Click="Button_Click_2"/>
+            <Button Content="编辑字符串" Click="Button_Click_3"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
