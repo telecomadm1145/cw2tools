@@ -280,6 +280,34 @@ unsafe
         }
     }
 
+    var mul = FindSignature(rom, 0x60000, "6e f4 5e f8 00 e8 00 86 24 f6 00 84 34 f4 41 87 56 88 10 84 24 f4 41 87 56 88 00 69 10 82 34 f2 86 f2 65 f0 1e f8 2e f4 1f fe");
+    if (mul == 0)
+        return;
+    mul -= (nint)rom;
+    Console.WriteLine($"[ + ] mul: {mul:X6}");
+
+    var cursor_render = (byte*)FindSignature(rom, 0x60000, $"60 80 00 01 06 e2 {BL(mul)} a6 f0 00 90 81 90 60 80 00 01 06 e2 {BL(mul)} a6 f0 08 90 01 00 89 90 01 00 60 80 00 01 06 e2 {BL(mul)} a6 f0 08 90 02 00 89 90 02 00 01");
+    if (cursor_render == null)
+        return;
+    Console.WriteLine($"[ + ] cursor_render: {cursor_render - rom:X6}");
+
+    ApplyPatch(cursor_render + 0x52,ConvertHexStringToBytes("89 90 00 00"));
+    ApplyPatch(cursor_render + 0x6A, ConvertHexStringToBytes("89 90 01 00"));
+    ApplyPatch(cursor_render + 0x82, ConvertHexStringToBytes("89 90 02 00"));
+
+    Console.WriteLine($"[ * ] cursor_render patched.");
+
+    var loading_icon = (byte*)FindSignature(rom, 0x60000, "a0 08 fa 09 aa 02 fa 03 17 00 00 8c 02 00 02 04 02 70");
+    if (loading_icon == null)
+        return;
+    loading_icon -= 0x18;
+
+    ApplyPatch(loading_icon, ConvertHexStringToBytes($"""
+        56 00
+        11 90 31 f0
+        1f fe
+        """));
+
     using (var fs = File.OpenWrite("rom_patched.bin"))
         fs.Write(new Span<byte>(rom, 0x80000));
 }

@@ -70,6 +70,7 @@ namespace cw2tools
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
+            uint zero = (uint)((uint)FindSignature(rom, 0x60000, "00") - (uint)rom);
             uint sb = Convert.ToUInt32(StringsBase.Text,16);
             OpenFileDialog sfd = new();
             sfd.ShowDialog();
@@ -77,7 +78,7 @@ namespace cw2tools
             fs.ReadLine();
             uint ptr = sb;
             int count = 0;
-            List<(uint, byte[])> FixPoints = new();
+            List<uint> points = new();
             var table = (uint*)(rom + Convert.ToUInt32(StringLut.Text, 16));
             while (!fs.EndOfStream)
             {
@@ -87,11 +88,21 @@ namespace cw2tools
                 var i = Convert.ToInt32(args[0]);
                 var bs = HexStringToByteArray(args[1]);
                 if (bs.Length == 0 || bs[0] == 0)
+                {
+                    table[i] = zero;
                     continue;
+                }
+                //var pp = FindSignature(rom, 0x60000, string.Join(' ', bs.Select(x => $"{x:X2}")));
+                //if (pp != 0)
+                //{
+                //    table[i] = (uint)(pp - (nint)rom);
+                //    continue;
+                //}
                 var p = rom + table[i];
-                if (bs.Length <= (strlen(p) + 1)) // 包括末尾的0
+                if ((bs.Length <= (strlen(p) + 1)) && !points.Contains(table[i])) // 包括末尾的0
                 {
                     ApplyPatch(p, bs);
+                    points.Add(table[i]);
                 }
                 else
                 {
