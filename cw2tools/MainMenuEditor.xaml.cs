@@ -283,7 +283,7 @@ namespace cw2tools
             var sig1 = FindSignature(rom, 0xffff, "00 ?? ?? ?? C1 ?? ?? ?? 00 ?? ?? ?? 03") - 3;
             var firstmatch = Convert.ToString(sig1 - (nint)rom, 16).PadLeft(4, '0').ToUpper();
             MenuBase1Input.Text = firstmatch;
-            var sig2 = FindSignature(rom, 0xffff, $"f8 b2 08 a2 {firstmatch[2..4]} {firstmatch[0..2]} 08 90") - (nint)rom;
+            var sig2 = FindSignature(rom, 0x60000, $"f8 b2 08 a2 {firstmatch[2..4]} {firstmatch[0..2]} 08 90") - (nint)rom;
             var v2 = *(ushort*)&rom[sig2 + 0xa4];
             var match2 = Convert.ToString(v2, 16).PadLeft(4, '0').ToUpper();
             MenuBase2Input.Text = match2;
