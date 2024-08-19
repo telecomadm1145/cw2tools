@@ -28,7 +28,6 @@ namespace cw2tools.CasioInternal
         public static IntPtr FindSignature(byte* start, nint size, string signature)
         {
             signature = signature.ToUpper();
-            Thread.Sleep(100);
             byte* pattern = (byte*)Marshal.StringToHGlobalAnsi(signature).ToPointer();
             byte* oldPat = pattern;
             byte* end = start + size;

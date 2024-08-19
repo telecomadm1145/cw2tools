@@ -1,25 +1,18 @@
-﻿<Window x:Class="cw2tools.MainMenuEditor"
+﻿<Window x:Class="cw2tools.CwxMainMenuEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="CwxMainMenuEditor" Height="450" Width="800">
     <StackPanel>
         <TextBlock Text="图标基址:"/>
         <TextBox x:Name="MenuBase1Input" Text="????"/>
-        <TextBlock Text="文本纹理基址:"/>
+        <TextBlock Text="文本基址:"/>
         <TextBox x:Name="MenuBase2Input" Text="????"/>
         <StackPanel Orientation="Horizontal">
             <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="图标数量:"/>
-            <TextBlock Text="" x:Name="IconCountTip"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <TextBox Text="?" Width="100" x:Name="IconCountInput"/>
-            <Button Content="修改" Click="Button_Click_12"/>
         </StackPanel>
         <TextBlock Text="图标索引:"/>
         <TextBox x:Name="IndexInput" Text="0"/>
@@ -27,18 +20,13 @@
         <TextBox x:Name="LanguageInput" Text="1"/>
         <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1"/>
         <TextBlock Text="预览:"/>
-        <Grid Height="128" HorizontalAlignment="Left">
+        <Grid Height="48" HorizontalAlignment="Left">
             <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         </Grid>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="第0位位图偏移"/>
+            <TextBlock Text="位图偏移"/>
             <TextBox Text="????" Width="100" x:Name="BitmapOffset0"/>
             <Button Content="修改" Click="Button_Click_4"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="第1位位图偏移"/>
-            <TextBox Text="????" Width="100" x:Name="BitmapOffset1"/>
-            <Button Content="修改" Click="Button_Click_3"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="文本位图偏移"/>
@@ -50,18 +38,9 @@
             <TextBox Text="??" Width="100" x:Name="ModeInput"/>
             <Button Content="修改" Click="Button_Click_2"/>
         </StackPanel>
-        <TextBlock Text="模式对应代码(BL addr 偏移)"/>
-        <TextBox Text="??????" Width="100" x:Name="ModeCodeInput2" HorizontalAlignment="Left"/>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="模式对应代码"/>
-            <TextBox Text="??????" Width="100" x:Name="ModeCodeInput"/>
-            <Button Content="修改" Click="Button_Click_13"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="导出 (64*28)" HorizontalAlignment="Left" Click="Button_Click_8"/>
-            <Button Content="替换图标(64*15)" HorizontalAlignment="Left" Click="Button_Click_7"/>
-            <Button Content="替换文字(64*13)" HorizontalAlignment="Left" Click="Button_Click_9"/>
-            <Button Content="替换图标和文字(64*28)" HorizontalAlignment="Left" Click="Button_Click_10"/>
+            <Button Content="导出 (48*24)" HorizontalAlignment="Left" Click="Button_Click_8"/>
+            <Button Content="替换 (48*24)" HorizontalAlignment="Left" Click="Button_Click_7"/>
         </StackPanel>
     </StackPanel>
 </Window>

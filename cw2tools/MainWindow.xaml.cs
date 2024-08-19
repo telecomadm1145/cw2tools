@@ -71,5 +71,10 @@ namespace cw2tools
         {
             new LocalStrings().Show();
         }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            new CodeInjector().Show();
+        }
     }
 }

@@ -16,6 +16,7 @@
             <Button Content="编辑字体" Click="Button_Click_1"/>
             <Button Content="编辑主界面" Click="Button_Click_2"/>
             <Button Content="编辑字符串" Click="Button_Click_3"/>
+            <Button Content="Debug" Click="Button_Click_4"/>
         </StackPanel>
     </StackPanel>
 </Window>

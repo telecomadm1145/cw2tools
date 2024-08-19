@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -277,9 +278,15 @@ namespace cw2tools
             SetLabel(bi, new Int32Rect(0, 16, 64, 13));
             stm.Close();
         }
-
+        private nint icon_cnt = 0;
+        private Dictionary<int, nint> main_subs = new();
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
+            var count_addr = (byte*)FindSignature(rom, 0x5e000, "81 e6 10 90 ?? ?? 00 01 07 f6 11 c6 7e b0 81 e0");
+            var cnt = rom[*(ushort*)&count_addr[4]];
+            icon_cnt = *(ushort*)&count_addr[4];
+            IconCountTip.Text = $"{*(ushort*)&count_addr[4]:X4}";
+            IconCountInput.Text = cnt.ToString();
             var sig1 = FindSignature(rom, 0xffff, "00 ?? ?? ?? C1 ?? ?? ?? 00 ?? ?? ?? 03") - 3;
             var firstmatch = Convert.ToString(sig1 - (nint)rom, 16).PadLeft(4, '0').ToUpper();
             MenuBase1Input.Text = firstmatch;
@@ -287,7 +294,36 @@ namespace cw2tools
             var v2 = *(ushort*)&rom[sig2 + 0xa4];
             var match2 = Convert.ToString(v2, 16).PadLeft(4, '0').ToUpper();
             MenuBase2Input.Text = match2;
-            //MessageBox.Show(string.Join(' ',sigs.Select(x => Convert.ToString(x - (nint)rom,16))));
+            var main = (byte*)FindSignature(rom, 0x5e000, $"10 90 58 f0 00 84 01 ?? ?? ?? 40 00 06 01 01 f0");
+            var main_sub = (byte*)FindSignature(main, 0x200, "10 90 a1 91 ?? 70 ?? c9") + 4;
+            main_subs.Clear();
+            while (main_sub[1] == 0x70 && main_sub[3] == 0xc9)
+            {
+                var bl = &main_sub[4 + (int)((sbyte)main_sub[2]) * 2];
+                if (bl[0] != 1 && (bl[1] & 0xf0) != 0xf0)
+                {
+                    // ??? idk what happened
+                    break;
+                }
+                var code = ((bl[1] & 0xf) << 16) | (bl[2]) | (bl[3] << 8);
+                main_subs.Add(main_sub[0], code);
+                main_sub += 4;
+            }
+            if (main_sub[0] == 1 && (main_sub[1] & 0xf0) == 0xf0)
+            {
+                var code = ((main_sub[1] & 0xf) << 16) | (main_sub[2]) | (main_sub[3] << 8);
+                main_subs.Add(0xc1, code);
+            }
+        }
+
+        private void Button_Click_12(object sender, RoutedEventArgs e)
+        {
+            rom[icon_cnt] = byte.Parse(IconCountInput.Text);
+        }
+
+        private void Button_Click_13(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
