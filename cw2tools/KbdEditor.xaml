@@ -1,0 +1,60 @@
+﻿<Window x:Class="cw2tools.KbdEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cw2tools"
+        mc:Ignorable="d"
+        Title="KbdEditor" Height="600" Width="800">
+    <Grid>
+        <StackPanel>
+            <Button Content="自动搜索" HorizontalAlignment="Left" Click="Button_Click"/>
+            <TextBlock Text="按键基址(Alpha)"/>
+            <TextBox Text="??????"/>
+            <TextBlock Text="按键基址(Sto)"/>
+            <TextBox Text="??????"/>
+            <TextBlock Text="按键基址(Shift)"/>
+            <TextBox Text="??????"/>
+            <TextBlock Text="按键基址(一般)"/>
+            <TextBox Text="??????"/>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="Alpha"/>
+                <RadioButton Content="Sto"/>
+                <RadioButton Content="Shift"/>
+                <RadioButton Content="Normal"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="ES"/>
+                <RadioButton Content="ESP"/>
+                <RadioButton Content="CWX"/>
+                <RadioButton Content="CWII"/>
+            </StackPanel>
+            <Grid x:Name="Buttons" ShowGridLines="True" Width="256" Height="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+            </Grid>
+            <TextBlock Text="按键对应代码"/>
+            <TextBox Text="????"/>
+            
+            <Button Content="修改" HorizontalAlignment="Left"/>
+        </StackPanel>
+    </Grid>
+</Window>

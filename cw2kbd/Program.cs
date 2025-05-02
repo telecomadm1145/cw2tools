@@ -166,7 +166,7 @@ unsafe
         03 00 11 90 31 f0 00 00 11 90 3d f0 11 90 0a f0 11 90 10 f0 11 90 11 f0 11 90 12 f0
         {BL(ki_mask_0)}
         {BL(ko_0)}
-        {B(STOP)}
+        {B(sleep)}
         """);
         const int shutdown_ = 0x5cbb0;
         ApplyPatch(rom + shutdown_, shutdown_func);
@@ -190,13 +190,13 @@ unsafe
         00 00
         11 90 d1 f0
         11 90 3d f0
-        11 90 0a f0
+        00 30 00 30
         11 90 10 f0
         11 90 11 f0
         11 90 12 f0
         {BL(ki_mask_0)}
         {BL(ko_0)}
-        {B(STOP)}
+        {B(sleep)}
         """);
         var shutdown_ = emu_report_status + 2 + patch.Length;
         ApplyPatch(rom + shutdown_, shutdown_func);

@@ -127,5 +127,18 @@ namespace cw2tools.CasioInternal
                 rom[i] = patch[i];
             }
         }
+
+        public static int ExtractBranch(byte* ptr)
+        {
+            var code = ((ptr[1] & 0xf) << 16) | (ptr[2]) | (ptr[3] << 8);
+            return code;
+        }
+        public static void EmitBL(byte* ptr, int code)
+        {
+            ptr[0] = 1;
+            ptr[1] = (byte)((code >> 16) | 0xf0);
+            ptr[2] = (byte)code;
+            ptr[3] = (byte)(code >> 8);
+        }
     }
 }

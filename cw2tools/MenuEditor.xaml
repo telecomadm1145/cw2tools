@@ -6,33 +6,101 @@
         xmlns:local="clr-namespace:cw2tools"
         xmlns:localc="clr-namespace:cw2tools.CasioInternal"
         mc:Ignorable="d"
-        Title="MenuEditor" Height="450" Width="800">
-    <ScrollViewer>
-        <StackPanel>
-            <Button Content="加载" Click="Button_Click"/>
-            <ItemsControl Name="MenuItemsControl">
+        Title="Menu Editor" Height="550" Width="850">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Button Row -->
+            <RowDefinition Height="*"/>
+            <!-- Content Row -->
+        </Grid.RowDefinitions>
+
+        <!-- Load Button -->
+        <Button Grid.Row="0" Content="加载" Click="Button_Click"
+                HorizontalAlignment="Left" Width="100" Margin="0,0,0,10"/>
+
+        <!-- Scrollable Menu Items Area -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl Name="MenuItemsControl" >
                 <ItemsControl.ItemTemplate>
+                    <!-- Template for each CMenu -->
                     <DataTemplate DataType="{x:Type localc:CMenu}">
-                        <StackPanel>
-                            <TextBlock Text="{Binding id,StringFormat={}0x{0:X4}}" FontSize="18"/>
-                            <ItemsControl ItemsSource="{Binding Items}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type localc:Item}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding key,StringFormat={}0x{0:X4}}" Width="80"/>
-                                            <TextBlock Text="{Binding condition,StringFormat={}0x{0:X2}}" Width="40"/>
-                                            <TextBlock Text="{Binding text_ptr2,StringFormat={}0x{0:X4}}" Width="80"/>
-                                            <TextBlock Text="{Binding text_local0}" Width="200"/>
-                                            <TextBlock Text="{Binding text_local1}" Width="200"/>
-                                            <Button Tag="{Binding}" Click="Button_Click_1" Content="编辑" Width="60"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
+                        <GroupBox Margin="0,5,0,10" Padding="5">
+                            <GroupBox.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding id, StringFormat='Menu ID: 0x{0:X4}'}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <Button Tag="{Binding}" Click="Button_Click_2" Content="编辑 Menu"
+                                            Width="80" Margin="15,0,0,0" VerticalAlignment="Center" Padding="5,2"/>
+                                </StackPanel>
+                            </GroupBox.Header>
+
+                            <StackPanel>
+                                <!-- Header Row for Items -->
+                                <Border Background="LightGray" Padding="5" Margin="0,0,0,5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <!-- Key -->
+                                            <ColumnDefinition Width="60"/>
+                                            <!-- Condition -->
+                                            <ColumnDefinition Width="80"/>
+                                            <!-- Ptr2 -->
+                                            <ColumnDefinition Width="1*"/>
+                                            <!-- Text Local 0 -->
+                                            <ColumnDefinition Width="1*"/>
+                                            <!-- Text Local 1 -->
+                                            <ColumnDefinition Width="Auto"/>
+                                            <!-- Edit Button -->
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Key" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="1" Text="Cond" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="2" Text="Text Ptr" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="3" Text="Text Local 0" FontWeight="SemiBold" Margin="5,0,0,0"/>
+                                        <TextBlock Grid.Column="4" Text="Text Local 1" FontWeight="SemiBold" Margin="5,0,0,0"/>
+                                        <!-- No header for the button column -->
+                                    </Grid>
+                                </Border>
+
+                                <!-- ItemsControl for the Items within CMenu -->
+                                <ItemsControl ItemsSource="{Binding Items}" HorizontalContentAlignment="Stretch">
+                                    <ItemsControl.ItemTemplate>
+                                        <!-- Template for each Item -->
+                                        <DataTemplate DataType="{x:Type localc:Item}">
+                                            <Border BorderBrush="Gainsboro" BorderThickness="0,0,0,1" Padding="5,3">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="80"/>
+                                                        <!-- Key -->
+                                                        <ColumnDefinition Width="60"/>
+                                                        <!-- Condition -->
+                                                        <ColumnDefinition Width="80"/>
+                                                        <!-- Ptr2 -->
+                                                        <ColumnDefinition Width="1*"/>
+                                                        <!-- Text Local 0 -->
+                                                        <ColumnDefinition Width="1*"/>
+                                                        <!-- Text Local 1 -->
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <!-- Edit Button -->
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0" Text="{Binding key, StringFormat={}0x{0:X4}}" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding condition, StringFormat={}0x{0:X2}}" VerticalAlignment="Center" TextAlignment="Center"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding text_ptr2, StringFormat={}0x{0:X4}}" VerticalAlignment="Center" TextAlignment="Center"/>
+                                                    <TextBlock Grid.Column="3" Text="{Binding text_local0}" VerticalAlignment="Center" Margin="5,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Grid.Column="4" Text="{Binding text_local1}" VerticalAlignment="Center" Margin="5,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                                    <Button Grid.Column="5" Tag="{Binding}" Click="Button_Click_1" Content="编辑"
+                                                            Width="60" Margin="10,0,0,0" Padding="5,2" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </GroupBox>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+    </Grid>
 </Window>

@@ -112,10 +112,42 @@ namespace cw2tools
             BitmapOffset0.Text = Convert.ToString(*(uint*)(rom + mb1 + index * 8) & 0xffffffu, 16);
             BitmapOffset1.Text = Convert.ToString(*(uint*)(rom + mb1 + index * 8 + 4) & 0xffffffu, 16);
             BitmapOffset2.Text = Convert.ToString(*(uint*)(rom + mb2 + index * 4 + language * 0x3c) & 0xffffffu, 16);
+            var mode = *(rom + mb1 + index * 8 + 7);
+            if (main_subs.ContainsKey(mode))
+            {
+                ModeCodeInput2.Text = Convert.ToString(main_subs[mode], 16);
+                ModeCodeInput.Text = Convert.ToString(ExtractBranch(rom + main_subs[mode]), 16);
+            }
+            else
+            {
+                ModeCodeInput2.Text = ModeCodeInput.Text = "??????";
+            }
         }
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            *(rom + mb1 + index * 8 + 7) = Convert.ToByte(ModeInput.Text, 16);
+            var oldId = *(rom + mb1 + index * 8 + 7);
+            var newId = *(rom + mb1 + index * 8 + 7) = Convert.ToByte(ModeInput.Text, 16);
+
+            // ⑤ 同步更新跳转表
+            if (main_subs.TryGetValue(oldId, out var jumpPtr))
+            {
+                // 旧 id 的跳转条目第一字节即是 id，自然替换即可
+                rom[jumpPtr] = newId;
+
+                // main_subs 字典里的键也要改
+                main_subs.Remove(oldId);
+                // 如果新 id 已存在，可以视需求提示或覆盖
+                if (main_subs.ContainsKey(newId))
+                    main_subs[newId] = jumpPtr;         // 覆盖
+                else
+                    main_subs.Add(newId, jumpPtr);
+            }
+            else
+            {
+                // 出现这种情况可能说明表里还没有对应的分支，需要手动补
+                // 这儿仅做提示，真正怎么处理看项目需求
+                MessageBox.Show($"跳转表中找不到旧模式 0x{oldId:X2} 的记录！");
+            }
         }
         // BitmapOffset1
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -305,14 +337,13 @@ namespace cw2tools
                     // ??? idk what happened
                     break;
                 }
-                var code = ((bl[1] & 0xf) << 16) | (bl[2]) | (bl[3] << 8);
-                main_subs.Add(main_sub[0], code);
+                //var code = ((bl[1] & 0xf) << 16) | (bl[2]) | (bl[3] << 8);
+                main_subs.Add(main_sub[0], (nint)(bl - rom));
                 main_sub += 4;
             }
             if (main_sub[0] == 1 && (main_sub[1] & 0xf0) == 0xf0)
             {
-                var code = ((main_sub[1] & 0xf) << 16) | (main_sub[2]) | (main_sub[3] << 8);
-                main_subs.Add(0xc1, code);
+                main_subs.Add(0xc1, (nint)(main_sub - rom));
             }
         }
 
@@ -323,7 +354,7 @@ namespace cw2tools
 
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
-
+            EmitBL(rom + Convert.ToInt32(ModeCodeInput2.Text, 16), Convert.ToInt32(ModeCodeInput.Text, 16));
         }
     }
 }

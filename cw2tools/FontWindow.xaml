@@ -5,55 +5,154 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <RadioButton x:Name="NormalFont_CB" Tag="0" Content="普通字体 14(0xE)" Checked="RadioButton_Checked" IsChecked="True"/>
-            <RadioButton x:Name="Little8_CB" Tag="1" Content="小字体 8" Checked="RadioButton_Checked"/>
-            <RadioButton x:Name="Little10_CB" Tag="2" Content="小字体 10(0xA)" Checked="RadioButton_Checked"/>
-        </StackPanel>
-        <StackPanel Visibility="{Binding ElementName=NormalFont_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-            <CheckBox x:Name="ABFix" Content="CNX V.A V.B 修复" Checked="ABFix_Checked" Unchecked="ABFix_Checked"/>
-            <TextBlock Text="00:"/>
-            <TextBox x:Name="NE_00_Input" Text="????"/>
-            <StackPanel Visibility="Visible" x:Name="VAFixDis">
-                <TextBlock Text="Fx:"/>
-                <TextBox x:Name="NE_Fx_Input" Text="????"/>
+        Title="字体工具" Height="550" Width="450" MinWidth="400" MinHeight="500"
+        FontSize="13">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Font Type Selection -->
+            <RowDefinition Height="Auto"/>
+            <!-- Font Specific Settings -->
+            <RowDefinition Height="Auto"/>
+            <!-- Character Index -->
+            <RowDefinition Height="Auto"/>
+            <!-- Preview -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions -->
+        </Grid.RowDefinitions>
+
+        <!-- 1. Font Type Selection -->
+        <GroupBox Header="字体类型" Grid.Row="0" Padding="5" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <RadioButton x:Name="NormalFont_CB" Tag="0" Content="普通字体 14 (0xE)" Checked="RadioButton_Checked" IsChecked="True" Margin="0,0,15,0"/>
+                <RadioButton x:Name="Little8_CB" Tag="1" Content="小字体 8" Checked="RadioButton_Checked" Margin="0,0,15,0"/>
+                <RadioButton x:Name="Little10_CB" Tag="2" Content="小字体 10 (0xA)" Checked="RadioButton_Checked"/>
             </StackPanel>
-            <StackPanel Visibility="Collapsed" x:Name="VAFixEn">
-                <TextBlock Text="F0:"/>
-                <TextBox x:Name="VA_F0_Input" Text="????"/>
-                <TextBlock Text="F1:"/>
-                <TextBox x:Name="VA_F1_Input" Text="????"/>
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Visibility="{Binding ElementName=Little8_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-            <TextBlock Text="00:"/>
-            <TextBox x:Name="L8_00_Input" Text="????"/>
-        </StackPanel>
-        <StackPanel Visibility="{Binding ElementName=Little10_CB,Path=IsChecked,Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-            <TextBlock Text="00:"/>
-            <TextBox x:Name="LA_00_Input" Text="????"/>
-            <TextBlock Text="Fx:"/>
-            <TextBox x:Name="LA_Fx_Input" Text="????"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11"/>
-        </StackPanel>
-        <TextBlock Text="字符代码:"/>
-        <TextBox x:Name="IndexInput" Text="0"/>
-        <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1"/>
-        <TextBlock Text="预览:"/>
-        <Grid Height="64" HorizontalAlignment="Left">
-            <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+        </GroupBox>
+
+        <!-- 2. Font Specific Settings -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <!-- Normal Font Settings -->
+            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
+                    Visibility="{Binding ElementName=NormalFont_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+                <StackPanel>
+                    <CheckBox x:Name="ABFix" Content="CNX V.A V.B 修复" Checked="ABFix_Checked" Unchecked="ABFix_Checked" Margin="0,0,0,10"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
+                        <TextBox x:Name="NE_00_Input" Text="????" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
+
+                        <!-- Non-Fix Panel -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Visible" x:Name="VAFixDis">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Fx:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
+                                <TextBox x:Name="NE_Fx_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Fix Panel -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" x:Name="VAFixEn">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="F0:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <TextBox x:Name="VA_F0_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBlock Text="F1:" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <TextBox x:Name="VA_F1_Input" Text="????" Grid.Column="3" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Little 8 Font Settings -->
+            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
+                    Visibility="{Binding ElementName=Little8_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="00:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="L8_00_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Little 10 Font Settings -->
+            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
+                    Visibility="{Binding ElementName=Little10_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
+                    <TextBox x:Name="LA_00_Input" Text="????" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
+                    <TextBlock Text="Fx:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="LA_Fx_Input" Text="????" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                </Grid>
+            </Border>
         </Grid>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="导出" HorizontalAlignment="Left" Click="Button_Click_2"/>
-            <Button Content="替换" HorizontalAlignment="Left" Click="Button_Click_7"/>
+
+        <!-- 3. Character Index -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11" Padding="10,2" Margin="0,0,15,0"/>
+            <TextBlock Text="字符代码:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="IndexInput" Text="0" Width="80" VerticalContentAlignment="Center"/>
+            <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1" Margin="10,0,0,0" Padding="10,2"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="全部导出" HorizontalAlignment="Left" Click="Button_Click_8"/>
-            <Button Content="全部替换" HorizontalAlignment="Left" Click="Button_Click_3"/>
-        </StackPanel>
-    </StackPanel>
+
+        <!-- 4. Preview -->
+        <GroupBox Header="预览" Grid.Row="3" Padding="5" Margin="0,0,0,10">
+            <Border BorderBrush="DarkGray" BorderThickness="1" Background="Gray" HorizontalAlignment="Left" Padding="20">
+                <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor" Height="128" Width="128" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </GroupBox>
+
+        <!-- 5. Actions -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="单个字符操作:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0,0,0,5"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                <Button Content="导出" HorizontalAlignment="Left" Click="Button_Click_2" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
+                <Button Content="替换" HorizontalAlignment="Left" Click="Button_Click_7" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
+            </StackPanel>
+
+            <TextBlock Text="全部字符操作:" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="0,0,0,5"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
+                <Button Content="全部导出" HorizontalAlignment="Left" Click="Button_Click_8" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
+                <Button Content="全部替换" HorizontalAlignment="Left" Click="Button_Click_3" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
 </Window>

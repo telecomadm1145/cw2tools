@@ -76,5 +76,15 @@ namespace cw2tools
         {
             new CodeInjector().Show();
         }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            new KbdEditor().Show();
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            new TokenEditor().Show();
+        }
     }
 }
