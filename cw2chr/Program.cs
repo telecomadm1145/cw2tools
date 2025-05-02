@@ -75,7 +75,7 @@ unsafe string strdup(byte* sb)
         if (c >= 0xf0)
         {
             var key = be_read(sb);
-            if (map.ContainsKey(key))
+            if (map.ContainsKey(key) && map[key] != "")
                 b.Append(map[key]);
             else
             {
@@ -86,7 +86,7 @@ unsafe string strdup(byte* sb)
         else
         {
             var key = c;
-            if (map.ContainsKey(key))
+            if (map.ContainsKey(key) && map[key] != "")
                 b.Append(map[key]);
             else
             {
