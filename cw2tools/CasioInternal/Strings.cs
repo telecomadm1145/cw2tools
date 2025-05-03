@@ -23,7 +23,7 @@ namespace cw2tools.CasioInternal
                 if (c >= 0xf0)
                 {
                     var key = be_read(sb);
-                    if (map.ContainsKey(key))
+                    if (map.ContainsKey(key) && map[key] != "")
                         b.Append(map[key]);
                     else
                     {
@@ -34,12 +34,35 @@ namespace cw2tools.CasioInternal
                 else
                 {
                     var key = c;
-                    if (map.ContainsKey(key))
+                    if (map.ContainsKey(key) && map[key] != "")
                         b.Append(map[key]);
                     else
                     {
                         b.Append($"<{key:X4}>");
                     }
+                    sb++;
+                }
+            }
+            return b.ToString();
+        }
+        public static string strhex(byte* sb)
+        {
+            StringBuilder b = new();
+            while (true)
+            {
+                var c = *sb;
+                if (c == 0)
+                    break;
+                if (c >= 0xf0)
+                {
+                    var key = be_read(sb);
+                    b.Append($"{key:X4}");
+                    sb += 2;
+                }
+                else
+                {
+                    var key = c;
+                    b.Append($"{key:X2}");
                     sb++;
                 }
             }
@@ -108,7 +131,7 @@ namespace cw2tools.CasioInternal
                 else if (c >= 0xf0)
                 {
                     var key = be_read(sb);
-                    if (map.ContainsKey(key))
+                    if (map.ContainsKey(key) && map[key] != "")
                         b.Append(map[key]);
                     else
                     {
@@ -119,7 +142,7 @@ namespace cw2tools.CasioInternal
                 else
                 {
                     var key = c;
-                    if (map.ContainsKey(key))
+                    if (map.ContainsKey(key) && map[key] != "")
                         b.Append(map[key]);
                     else
                     {

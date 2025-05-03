@@ -28,8 +28,10 @@ namespace cw2tools
             private bool _isModified;
 
             public int CodePoint { get; } = codePoint;
-            public string CodePointHex => $"{CodePoint:X4}"; // Format as 4 hex digits
+
+            public string CodePointHex => CodePoint < 0x100 ? $"{CodePoint:X2}" : $"{CodePoint:X4}"; // Format
             public string OriginalText { get; } = token.str;
+            public string TextHex { get; } = token.hex;
             public byte* Ptr { get; } = token.ptr;
             public int OriginalLength { get; } = token.len;
 
@@ -85,6 +87,7 @@ namespace cw2tools
         public class Token
         {
             public string str { get; set; }
+            public string hex { get; set; }
             public byte* ptr { get; set; }
             public int len { get; set; }
         }
@@ -173,90 +176,38 @@ namespace cw2tools
                 MessageBox.Show("ROM is not loaded. Cannot save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            int modifiedCount = 0;
-            int errorCount = 0;
-            var encoding = Encoding.GetEncoding("shift_jis"); // IMPORTANT: Use the correct encoding for your ROM! guessing Shift_JIS
-
-            foreach (var displayToken in DisplayTokens)
+            
+            var dialog = new Microsoft.Win32.SaveFileDialog
             {
-                if (displayToken.IsModified)
+                FileName = "Tokens",
+                DefaultExt = ".csv",
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+            };
+
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return;
+
+            try
+            {
+                var lines = new List<string>
                 {
-                    try
-                    {
-                        // Convert the new string back to bytes using the correct encoding
-                        // WARNING: This assumes the new string can be encoded and fits the ORIGINAL length.
-                        byte[] newBytes = encoding.GetBytes(displayToken.Text);
+                    "Code,Hex,Text,Len"
+                };
 
-                        // Get the original pointer and length
-                        byte* targetPtr = displayToken.Ptr;
-                        int originalLength = displayToken.OriginalLength;
-
-                        if (newBytes.Length > originalLength)
-                        {
-                            // Option 1: Truncate (Data Loss!)
-                            Array.Copy(newBytes, 0, (new Span<byte>(targetPtr, originalLength).ToArray()), 0, originalLength);
-                            // Option 2: Report error
-                            // throw new Exception($"New text ('{displayToken.Text}') is too long ({newBytes.Length} bytes) for original allocation ({originalLength} bytes).");
-
-                            // For this example, we'll truncate and log a warning
-                            Debug.WriteLine($"Warning: Token {displayToken.CodePointHex}: New text truncated from {newBytes.Length} to {originalLength} bytes.");
-                            System.Runtime.InteropServices.Marshal.Copy(newBytes, 0, (IntPtr)targetPtr, originalLength);
-
-                        }
-                        else
-                        {
-                            // Write the new bytes
-                            System.Runtime.InteropServices.Marshal.Copy(newBytes, 0, (IntPtr)targetPtr, newBytes.Length);
-
-                            // Option: Pad with null terminators or original bytes if shorter?
-                            // If the original was null-terminated and the new one isn't, add it
-                            if (newBytes.Length < originalLength) // && targetPtr[originalLength - 1] == 0) // Check if original was likely null terminated
-                            {
-                                // Fill the remaining space with 0x00 (null terminator)
-                                for (int i = newBytes.Length; i < originalLength; i++)
-                                {
-                                    targetPtr[i] = 0;
-                                }
-                                // Or maybe fill with original bytes? More complex. For now, null padding is common.
-                            }
-                        }
-
-                        // Update the underlying internal token data if necessary (optional)
-                        // var internalToken = _internalTokens[displayToken.CodePoint];
-                        // internalToken.str = displayToken.Text;
-                        // internalToken.len = Math.Min(newBytes.Length, originalLength); // Update length cautiously
-
-                        displayToken.MarkAsSaved(); // Reset modified flag
-                        modifiedCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error saving token {displayToken.CodePointHex}: {ex}");
-                        errorCount++;
-                        // Optionally mark the specific item with an error state in the UI
-                    }
+                foreach (var token in DisplayTokens)
+                {
+                    string line = $"{token.CodePointHex},\"{token.TextHex.Replace("\"", "\"\"")}\",\"{token.OriginalText.Replace("\"", "\"\"")}\",{token.OriginalLength}";
+                    lines.Add(line);
                 }
-            }
 
-            string message = $"{modifiedCount} token(s) saved successfully.";
-            if (errorCount > 0)
-            {
-                message += $"\n{errorCount} token(s) failed to save. Check Debug Output for details.";
-                MessageBox.Show(message, "Save Result", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.IO.File.WriteAllLines(dialog.FileName, lines, Encoding.UTF8);
+                MessageBox.Show("Export successful.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else if (modifiedCount > 0)
+            catch (Exception ex)
             {
-                MessageBox.Show(message, "Save Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Error saving file:\n{ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else
-            {
-                MessageBox.Show("No modified tokens to save.", "Save Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-            // "Refresh" part could mean reloading from ROM, discarding changes.
-            // If you want a separate Refresh action, add another button or clarify this one's behavior.
-            // To refresh (discarding unsaved changes), just call SearchButton_Click again.
         }
 
 
@@ -317,8 +268,9 @@ namespace cw2tools
                     ushort offset = tablePtr[(i << 1) + 1]; // Get the offset from the table
                     byte* ptr = rom + offset;
                     string text = strdup(ptr); // Decode using current map
+                    string hex = strhex(ptr); // Decode using current map
                     int len = (int)strlen(ptr);  // Get length
-                    _internalTokens.Add((tb.Key << 8) | i, new Token() { str = text, ptr = ptr, len = len });
+                    _internalTokens.Add((tb.Key << 8) | i, new Token() { str = text, hex = hex, ptr = ptr, len = len });
                 }
             }
             Debug.WriteLine($"CWII: Found {_internalTokens.Count} tokens.");
@@ -417,6 +369,7 @@ namespace cw2tools
                     tempBuffer[byteCount] = 0; // Null terminate the buffer
 
                     string text = strdup(tempBuffer); // Decode the copied buffer
+                    string hex = strhex(tempBuffer); // Decode the copied buffer
                     int actualLen = byteCount; // The number of bytes copied
 
                     if (off == 0xf)
@@ -424,7 +377,7 @@ namespace cw2tools
                         text += "("; // Indicate the special offset case
                     }
 
-                    _internalTokens.Add((tb.Key << 8) | i, new Token() { str = text, ptr = effectivePtr, len = actualLen }); // Use actual length and effective pointer
+                    _internalTokens.Add((tb.Key << 8) | i, new Token() { str = text, hex = hex, ptr = effectivePtr, len = actualLen }); // Use actual length and effective pointer
                 }
             }
             Debug.WriteLine($"Legacy: Found {_internalTokens.Count} tokens.");
