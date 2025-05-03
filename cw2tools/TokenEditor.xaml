@@ -10,7 +10,7 @@
         <!-- Buttons at the Top -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
             <Button Content="自动搜索 (Load)" HorizontalAlignment="Left" Click="SearchButton_Click" Margin="0,0,10,0" Padding="10,2"/>
-            <Button Content="保存修改 (Save)" HorizontalAlignment="Left" Click="SaveRefreshButton_Click" Padding="10,2"/>
+            <Button Content="保存CSV (Save)" HorizontalAlignment="Left" Click="SaveRefreshButton_Click" Padding="10,2"/>
             <!-- Add a Refresh Button if needed -->
             <!-- <Button Content="刷新 (Refresh)" HorizontalAlignment="Left" Click="RefreshButton_Click" Margin="10,0,0,0" Padding="10,2"/> -->
         </StackPanel>
@@ -77,21 +77,9 @@
 
                     <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding CodePointHex}"/>
 
-                    <GridViewColumn Header="Text" Width="400">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <!-- Use a TextBox for editing -->
-                                <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
-                                         BorderThickness="0"
-                                         Background="Transparent"
-                                         AcceptsReturn="False"/>
-                                <!-- UpdateSourceTrigger=PropertyChanged makes IsModified update as you type -->
-                                <!-- UpdateSourceTrigger=LostFocus (default) updates when TextBox loses focus -->
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                    <GridViewColumn Header="Hex" Width="400" DisplayMemberBinding="{Binding TextHex}"/>
 
-                    <GridViewColumn Header="Original Text" Width="200" DisplayMemberBinding="{Binding OriginalText}"/>
+                    <GridViewColumn Header="Text" Width="200" DisplayMemberBinding="{Binding OriginalText}"/>
 
                     <!-- Add more columns if needed, e.g., Original Length -->
                     <GridViewColumn Header="Len" Width="50" DisplayMemberBinding="{Binding OriginalLength}"/>
