@@ -1407,3 +1407,274 @@ document.getElementById('importLabel').addEventListener('click', () => {
         setMainMenuLabel(img, {x: 0, y: 0, width: 64, height: 13});
     });
 });
+
+// =================================================================
+// KBD Patcher
+// =================================================================
+
+const kbdLog = (message) => {
+    const logEl = document.getElementById('kbdPatcherLog');
+    logEl.textContent += message + '\n';
+    logEl.scrollTop = logEl.scrollHeight;
+};
+
+function formatBL(func) {
+    return `01 F${((func >> 16) & 0xf).toString(16)} ${(func & 0xff).toString(16).padStart(2, '0')} ${((func >> 8) & 0xff).toString(16).padStart(2, '0')}`;
+}
+
+function formatB(func) {
+    return `00 F${((func >> 16) & 0xf).toString(16)} ${(func & 0xff).toString(16).padStart(2, '0')} ${((func >> 8) & 0xff).toString(16).padStart(2, '0')}`;
+}
+
+function convertHexStringToBytes(hexString) {
+    const cleanString = hexString.replace(/\s+/g, ''); // Remove all whitespace
+    const bytes = new Uint8Array(cleanString.length / 2);
+    for (let i = 0; i < cleanString.length; i += 2) {
+        bytes[i / 2] = parseInt(cleanString.substring(i, i + 2), 16);
+    }
+    return bytes;
+}
+
+function checkSignature(signature, description) {
+    const addr = findSignature(signature);
+    if (addr === -1) {
+        const message = `[ x ] Signature not found for ${description}`;
+        kbdLog(message);
+        throw new Error(message);
+    }
+    kbdLog(`[ + ] ${description}: ${addr.toString(16).toUpperCase()}`);
+    return addr;
+}
+
+async function patchKbd(shutdownImage) {
+    if (!rom) {
+        kbdLog("[ x ] ROM not loaded.");
+        throw new Error("ROM not loaded.");
+    }
+    document.getElementById('kbdPatcherLog').textContent = ''; // Clear log
+    kbdLog("[ + ] cw2kbd by telecomadm1145");
+    kbdLog("[ + ] Emulator rom keyboard patcher");
+
+    try {
+        const ki_mask_0xff = checkSignature("ff 00 11 90 42 f0 1f fe", "ki_mask_0xff");
+        const ko_0_0x7f = checkSignature("7f 00 11 90 46 f0 1f fe", "ko_0_0x7f");
+        const delay = checkSignature("ce f8 05 f2 91 a0 0a f0 35 c8", "delay");
+        const reset_timer = delay + 0x7a;
+        const tick = checkSignature("ce f8 01 ?? ?? ?? 05 f8 0b f0 00 03 3f fe 08 92 00 03 20 84 00 05 08 90 ff 02 00 01 04 e2", "tick");
+        const is_key_available = checkSignature("1e 00 ff 10 fe c8 7f 00 11 90 46 f0 00 e0 10 92 40 f0 ff 72 00 60 1f fe", "is_key_available");
+        const ko_0 = checkSignature("00 02 11 92 46 f0 1f fe", "ko_0");
+        const ki_mask_0 = checkSignature("00 00 11 90 42 f0 1f fe", "ki_mask_0");
+        const exit = checkSignature("ea a1 2e f4 3e f8 8e f2", "exit");
+        const enter = checkSignature("7e f8 6e f4 1a ae 1f fe", "enter");
+
+        const get_kiko_emu_sig = `ce f8 ${formatBL(enter)} fe e1 f4 04 01 05 07 ce`;
+        const get_kiko_emu = checkSignature(get_kiko_emu_sig, "get_kiko_emu");
+
+        if (rom[get_kiko_emu + 0x38] !== 1 || (rom[get_kiko_emu + 0x39] & 0xf0) !== 0xf0) throw new Error("Invalid get_kiko_emu data (scan_key)");
+        const scan_key = extractBranch(get_kiko_emu + 0x38);
+
+        if (rom[get_kiko_emu + 0x44] !== 1 || (rom[get_kiko_emu + 0x45] & 0xf0) !== 0xf0) throw new Error("Invalid get_kiko_emu data (key_debounce)");
+        const key_debounce = extractBranch(get_kiko_emu + 0x44);
+
+        const render_copy_sig = `ce f8 ${formatBL(enter)} fa e1 00 88 00 00 11 90 fc 91 10 90 08 92`;
+        const render_copy = findSignature(render_copy_sig);
+        kbdLog(`[ * ] render_copy: ${render_copy !== -1 ? render_copy.toString(16).toUpperCase() : 'Not Found'}`);
+        if (render_copy !== -1) {
+            rom[render_copy + 0x6c] = 0xf8;
+            rom[render_copy + 0x6e] = 0;
+            kbdLog(`[ + ] Patched render_copy.`);
+        }
+
+        const sleep = checkSignature("0c f0 14 f0 30 90 fd 20 31 90 0c f0 08 f0 50 00 a0 01 31 90 51 91 02 00 31 90 8f fe 8f fe 1f fe", "sleep");
+
+        const key_func_str = `ce f8 ${formatBL(enter)} 05 f8 fe e1 ${formatBL(ki_mask_0xff)} ${formatBL(ko_0_0x7f)} ${formatBL(reset_timer)} 85 f0 ${formatBL(tick)} a0 00 0f 01 ${formatBL(delay)} 91 a0 14 f0 1a c9 ${formatBL(is_key_available)} 00 70 19 c9 ${formatBL(ko_0)} ${formatBL(ki_mask_0)} 01 e0 ${formatBL(delay)} e5 f0 fe e0 ${formatBL(scan_key)} 00 70 df c9 e5 f0 fe e0 ${formatBL(key_debounce)} 00 70 d9 c9 7e b0 13 90 e0 91 06 ce ${formatBL(sleep)} 00 30 00 30 00 30 dc ce ${formatB(exit)}`;
+        const patch = convertHexStringToBytes(key_func_str);
+
+        const animate_func = checkSignature("ce f8 01 ?? ?? ?? 20 8a 05 fc 1c ce 01 ?? ?? ?? 0a d0 4e f0 08 b0 5e f0 06 d0 4e f0 04 b0 5e f0 03 d3 02 d2 01 d1 c0 90", "animate");
+        const bit_blit = extractBranch(animate_func + 0x29);
+        kbdLog(`[ * ] bit_blit: ${bit_blit.toString(16).toUpperCase()}`);
+
+        const emu_scan_key_1 = findSignature(`e5 f0 fa 10 fc 61 ${formatBL(tick)} a0 00 0f 01 ${formatBL(delay)}`);
+        if (emu_scan_key_1 === -1) throw new Error("emu_scan_key_1 not found");
+        kbdLog(`[ * ] emu_scan_key patch point: ${emu_scan_key_1.toString(16).toUpperCase()}`);
+        const emu_scan_key_real = emu_scan_key_1 - 0x114;
+        kbdLog(`[ * ] emu_scan_key: ${emu_scan_key_real.toString(16).toUpperCase()}`);
+
+        let wait_key = findSignature(`e5 f0 ca e0 ${formatBL(emu_scan_key_real)} e8 90 cb ff`);
+        if (wait_key === -1) {
+            kbdLog(`[ + ] Warn: fall back to magic pattern for wait_key.`);
+            wait_key = findSignature(`e5 f0 ca e0 01 ?? ?? ?? e8 90 cb ff`);
+        }
+        checkSignature(wait_key, "wait_key part");
+
+        const emu_report_status = extractBranch(wait_key + 0x25);
+        kbdLog(`[ * ] emu_report_status: ${emu_report_status.toString(16).toUpperCase()}`);
+        applyPatch(emu_report_status, new Uint8Array([0x1f, 0xfe]));
+        const wait_kiko_v2 = emu_report_status + 2;
+        applyPatch(wait_kiko_v2, patch);
+        kbdLog(`[ + ] Written wait_kiko_v2 to ${wait_kiko_v2.toString(16).toUpperCase()}`);
+
+        // Placeholder for image handling
+        // For now, only run the non-image part
+        const shutdown_func_no_img = `03 00 11 90 31 f0 00 00 11 90 d1 f0 11 90 3d f0 00 30 00 30 11 90 10 f0 11 90 11 f0 11 90 12 f0 ${formatBL(ki_mask_0)} ${formatBL(ko_0)} ${formatB(sleep)}`;
+        const shutdown_addr = wait_kiko_v2 + patch.length;
+        applyPatch(shutdown_addr, convertHexStringToBytes(shutdown_func_no_img));
+        kbdLog(`[ * ] Written shutdown function to ${shutdown_addr.toString(16).toUpperCase()}.`);
+
+        const wait_key_shutdown_routine = wait_key + 0x9C;
+
+        if (shutdownImage) {
+            const bs = 0x5cc70;
+            kbdLog(`[ * ] Writing shutdown logo to ${bs.toString(16).toUpperCase()}.`);
+            set3_js(bs + 0x10, bs + 0x10 + 0x5ea, 192, 63, shutdownImage);
+
+            const view = new DataView(rom.buffer);
+            view.setUint32(bs, bs + 0x10 + 0x5ea, true);
+            view.setUint32(bs + 4, bs + 0x10, true);
+            applyPatch(bs + 0x8, new Uint8Array([0, 0, 192, 63]));
+
+            const xx = (bs >> 16) & 0xf;
+            const yy = (bs >> 8) & 0xff;
+            const zz = bs & 0xff;
+
+            const shutdown_func_str = `00 00 11 90 d1 f0 0c f0 ${zz.toString(16).padStart(2,'0')} ${yy.toString(16).padStart(2,'0')} ${xx.toString(16).padStart(2,'0')} E3 54 90 6E F0 ${xx.toString(16).padStart(2,'0')} E3 54 90 6E F0 ${xx.toString(16).padStart(2,'0')} E3 54 90 ${formatBL(bit_blit)} ${formatBL(render_copy)} a0 00 0f 01 ${formatBL(delay)} 03 00 11 90 31 f0 00 00 11 90 3d f0 11 90 0a f0 11 90 10 f0 11 90 11 f0 11 90 12 f0 ${formatBL(ki_mask_0)} ${formatBL(ko_0)} ${formatB(sleep)}`;
+            const shutdown_ = 0x5cbb0;
+            applyPatch(shutdown_, convertHexStringToBytes(shutdown_func_str));
+            kbdLog(`[ * ] Written shutdown function to ${shutdown_.toString(16).toUpperCase()}.`);
+
+            applyPatch(wait_key_shutdown_routine, convertHexStringToBytes(`${formatBL(shutdown_)} 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30`));
+            kbdLog(`[ * ] Patched shutdown call.`);
+
+        } else {
+            applyPatch(shutdown_addr, convertHexStringToBytes(shutdown_func_no_img));
+            kbdLog(`[ * ] Written shutdown function to ${shutdown_addr.toString(16).toUpperCase()}.`);
+            applyPatch(wait_key_shutdown_routine, convertHexStringToBytes(`${formatBL(shutdown_addr)} 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30`));
+            kbdLog(`[ * ] Patched shutdown call.`);
+        }
+
+
+        const scan_key_patch_str = `00 00 00 01 13 90 e0 91 e5 f0 fa 10 fc 61 ${formatBL(wait_kiko_v2)} 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 12 90 e0 91 83 90 00 30 13 80`;
+        applyPatch(emu_scan_key_1, convertHexStringToBytes(scan_key_patch_str));
+        const scan_key_patch2_str = `01 00 11 90 c9 91 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30 00 30`;
+        applyPatch(emu_scan_key_1 + 0x3c, convertHexStringToBytes(scan_key_patch2_str));
+        kbdLog("[ + ] Patched emu_scan_key.");
+
+        const exicon_func = findSignature("03 00 11 90 18 f0 1f fe");
+        if (exicon_func !== -1) {
+            rom[exicon_func] = 0;
+            kbdLog("[ + ] Patched exicon setup.");
+        }
+
+        const formula_start_eval = findSignature(`ce f8 5e f4 ?? 04 8e 05 04 02 08 e3 41 92 a0 00 0f 01 ${formatBL(delay)} 1e f4 8e f2`);
+        if (formula_start_eval !== -1) {
+            applyPatch(formula_start_eval, convertHexStringToBytes("10 00 11 90 46 f0 04 00 11 90 42 f0 1f fe"));
+            kbdLog("[ + ] Patched formula_start_eval.");
+        }
+
+        const is_ac_pressed = findSignature(`ce f8 5e f4 ?? 04 8e 05 08 02 08 e3 41 92 a0 00 0f 01 ${formatBL(delay)} 00 e0`);
+        if (is_ac_pressed !== -1) {
+            applyPatch(is_ac_pressed, convertHexStringToBytes("a1 a0 40 f0 02 c9 00 00 1f fe 01 00 1f fe"));
+            kbdLog("[ + ] Patched is_ac_pressed.");
+        }
+
+        const memcpy_far = findSignature("5e fe 1a ae 6e f8 6e f4 5e fc 05 f8 20 8a 05 f4 20 86 42 b0 05 fc 0a ce 45 f0 c0 93 6f 90 41 93 81 e0 05 f4 81 ec 44 b0 ff e0 c4 b0 00 e0 44 b2 27 f0 f2 c1 85 f0 a0 82 1e fc 2e f4 2e f8 ea a1 1e fe");
+        if (memcpy_far !== -1) {
+            kbdLog(`[ + ] memcpy_far: ${memcpy_far.toString(16).toUpperCase()}`);
+            let start_addr = 0;
+            while(true) {
+                const memcpy_far_caller = findSignature(`00 00 90 01 08 02 ${formatBL(memcpy_far)}`, start_addr);
+                if (memcpy_far_caller === -1) break;
+                kbdLog(`[ + ] memcpy_far caller: ${memcpy_far_caller.toString(16).toUpperCase()}`);
+                rom[memcpy_far_caller + 0x2] = 0xf8;
+                rom[memcpy_far_caller + 0x4] = 0;
+                start_addr = memcpy_far_caller + 1;
+            }
+        }
+
+        const mul = findSignature("6e f4 5e f8 00 e8 00 86 24 f6 00 84 34 f4 41 87 56 88 10 84 24 f4 41 87 56 88 00 69 10 82 34 f2 86 f2 65 f0 1e f8 2e f4 1f fe");
+        if (mul !== -1) {
+            kbdLog(`[ + ] mul: ${mul.toString(16).toUpperCase()}`);
+            const cursor_render = findSignature(`60 80 00 01 06 e2 ${formatBL(mul)} a6 f0 00 90 81 90 60 80 00 01 06 e2 ${formatBL(mul)} a6 f0 08 90 01 00 89 90 01 00 60 80 00 01 06 e2 ${formatBL(mul)} a6 f0 08 90 02 00 89 90 02 00 01`);
+            if (cursor_render !== -1) {
+                kbdLog(`[ + ] cursor_render: ${cursor_render.toString(16).toUpperCase()}`);
+                applyPatch(cursor_render + 0x52, convertHexStringToBytes("89 90 00 00"));
+                applyPatch(cursor_render + 0x6A, convertHexStringToBytes("89 90 01 00"));
+                applyPatch(cursor_render + 0x82, convertHexStringToBytes("89 90 02 00"));
+                kbdLog(`[ * ] cursor_render patched.`);
+            }
+        }
+
+        const loading_icon = findSignature("a0 08 fa 09 aa 02 fa 03 17 00 00 8c 02 00 02 04 02 70");
+        if (loading_icon !== -1) {
+            const loading_icon_patch_addr = loading_icon - 0x18;
+            kbdLog(`[ * ] loading icon patch addr: ${loading_icon_patch_addr.toString(16).toUpperCase()}`);
+            applyPatch(loading_icon_patch_addr, convertHexStringToBytes("56 00 11 90 31 f0 1f fe"));
+        }
+
+        kbdLog("[ + ] Patching finished!");
+
+    } catch (e) {
+        kbdLog(`[ x ] ERROR: ${e.message}`);
+    }
+}
+
+document.getElementById('patchKbdButton').addEventListener('click', async function() {
+    const fileInput = document.getElementById('shutdownPngFile');
+    let shutdownImage = null;
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        shutdownImage = await new Promise((resolve, reject) => {
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    await patchKbd(shutdownImage);
+});
+
+function set3_js(rb1, rb2, width, height, image) {
+    const w2 = width / 8;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, width, height);
+    const imageData = ctx.getImageData(0, 0, width, height).data;
+
+    const array1_offset = rb1;
+    const array2_offset = rb2;
+
+    // Clear the target areas in the ROM
+    for(let i=0; i < height * w2; i++) {
+        rom[array1_offset + i] = 0;
+        rom[array2_offset + i] = 0;
+    }
+
+    for (let j = 0; j < height; j++) {
+        for (let i = 0; i < w2; i++) {
+            for (let k = 0; k < 8; k++) {
+                const pixelIndex = (j * width + i * 8 + k) * 4;
+                // Using the red channel (index 0) for grayscale value
+                const b = imageData[pixelIndex] >> 6; // 0, 1, 2, or 3
+
+                if ((b & 0b10) === 0) {
+                    rom[array2_offset + j * w2 + i] |= (0x80 >> k);
+                } else {
+                    rom[array2_offset + j * w2 + i] &= ~(0x80 >> k);
+                }
+
+                if ((b & 0b01) === 0) {
+                    rom[array1_offset + j * w2 + i] |= (0x80 >> k);
+                } else {
+                    rom[array1_offset + j * w2 + i] &= ~(0x80 >> k);
+                }
+            }
+        }
+    }
+}
