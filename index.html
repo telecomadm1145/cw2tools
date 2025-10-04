@@ -76,7 +76,134 @@
         <div class="input-group">
             <button id="saveRomButton">Save ROM</button>
         </div>
+
+        <hr>
+
+        <h2>Local Strings Editor</h2>
+        <div class="input-group">
+            <label for="lut_address">Language LUT Address (hex):</label>
+            <input type="text" id="lut_address">
+            <button id="autoDetectLutButton">Auto-detect LUT</button>
+        </div>
+        <div class="input-group">
+            <label for="language_code">Language Code (hex):</label>
+            <input type="text" id="language_code" value="0">
+        </div>
+        <div class="input-group">
+            <label for="string_lut_address">String LUT Address (hex):</label>
+            <input type="text" id="string_lut_address">
+            <button id="getStringLutButton">Get String LUT</button>
+        </div>
+        <div class="input-group">
+            <button id="dumpStringsButton">Dump Strings</button>
+            <button id="exportCsvButton">Export as CSV</button>
+        </div>
+        <div class="input-group">
+            <label for="strings_base_address">New Strings Base Address (hex):</label>
+            <input type="text" id="strings_base_address" value="50000">
+             <label for="csvFile">Import from CSV:</label>
+            <input type="file" id="csvFile" accept=".csv">
+            <button id="importCsvButton">Import and Patch</button>
+        </div>
+        <table id="strings_table" border="1" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="width:10%;">Index</th>
+                    <th style="width:30%;">Raw Bytes</th>
+                    <th>Decoded String</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- String data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <hr>
+
+        <h2>General Menu Editor</h2>
+        <div class="input-group">
+            <button id="loadMenusButton">Load All Menus</button>
+        </div>
+        <div id="menusContainer" style="max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+            <!-- Menu data will be inserted here -->
+        </div>
+
+        <hr>
+
+        <h2>Main Menu Editor</h2>
+        <div class="input-group">
+             <label for="menuBase1Input">Menu Base 1 (hex):</label>
+             <input type="text" id="menuBase1Input">
+             <label for="menuBase2Input">Menu Base 2 (hex):</label>
+             <input type="text" id="menuBase2Input">
+             <label for="iconCountInput">Icon Count:</label>
+             <input type="text" id="iconCountInput" style="width: 50px;">
+             <button id="autoDetectMainMenuButton">Auto-detect</button>
+             <button id="updateIconCountButton">Update Count</button>
+        </div>
+        <div class="input-group">
+            <label for="mainMenuLanguageInput">Language (hex):</label>
+            <input type="text" id="mainMenuLanguageInput" value="0" style="width: 50px;">
+            <label for="mainMenuIndexInput">Index (hex):</label>
+            <input type="text" id="mainMenuIndexInput" value="0" style="width: 50px;">
+            <button id="loadMainMenuItemButton">Load Item</button>
+        </div>
+        <div>
+            <canvas id="mainMenuCanvas" width="64" height="29"></canvas>
+        </div>
+        <div class="input-group">
+            <label for="bitmapOffset0">Bitmap 0 (Icon):</label>
+            <input type="text" id="bitmapOffset0"> <button id="updateBitmapOffset0">Update</button>
+        </div>
+        <div class="input-group">
+            <label for="bitmapOffset1">Bitmap 1 (Icon):</label>
+            <input type="text" id="bitmapOffset1"> <button id="updateBitmapOffset1">Update</button>
+        </div>
+        <div class="input-group">
+            <label for="bitmapOffset2">Bitmap 2 (Label):</label>
+            <input type="text" id="bitmapOffset2"> <button id="updateBitmapOffset2">Update</button>
+        </div>
+        <div class="input-group">
+            <label for="modeInput">Mode:</label>
+            <input type="text" id="modeInput"> <button id="updateModeButton">Update</button>
+        </div>
+         <div class="input-group">
+            <label for="modeCodeInput">Mode Code Addr:</label>
+            <input type="text" id="modeCodeInput" readonly>
+            <label for="modeCodeValueInput">Target Addr:</label>
+            <input type="text" id="modeCodeValueInput">
+            <button id="updateModeCodeButton">Update Branch</button>
+        </div>
+        <div class="input-group">
+            <button id="importIconFull">Import Full (64x29)</button>
+            <button id="importIcon">Import Icon (64x16)</button>
+            <button id="importLabel">Import Label (64x13)</button>
+            <button id="exportIconFull">Export Full Image</button>
+        </div>
+
     </div>
+
+    <!-- Modal for editing a menu item -->
+    <div id="editMenuModal" style="display:none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px;">
+            <h3>Edit Menu Item</h3>
+            <div class="input-group">
+                <label for="editKeyHex">Key (hex):</label>
+                <input type="text" id="editKeyHex">
+            </div>
+            <div class="input-group">
+                <label for="editCondition">Condition (hex):</label>
+                <input type="text" id="editCondition">
+            </div>
+            <div class="input-group">
+                <label for="editTextHex">Text Pointer (hex):</label>
+                <input type="text" id="editTextHex">
+            </div>
+            <button id="saveMenuItemButton">Save</button>
+            <button id="cancelEditMenuItemButton">Cancel</button>
+        </div>
+    </div>
+
     <script src="main.js"></script>
 </body>
 </html>
