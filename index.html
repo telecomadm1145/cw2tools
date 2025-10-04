@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CW2 Web Tools</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { max-width: 800px; margin: 0 auto; padding: 1em; }
+        .input-group { margin-bottom: 1em; }
+        label { display: block; margin-bottom: .5em; }
+        input[type="text"] { width: 100px; }
+        canvas { border: 1px solid black; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CW2 Web Tools - Font Editor</h1>
+        <div class="input-group">
+            <label for="romFile">Load ROM:</label>
+            <input type="file" id="romFile">
+        </div>
+        <div class="input-group">
+            <label>Font Type:</label>
+            <input type="radio" name="font_type" value="0" checked> CWII/VA
+            <input type="radio" name="font_type" value="1"> L8
+            <input type="radio" name="font_type" value="2"> LA
+        </div>
+        <div class="input-group">
+            <label for="charIndex">Character Index (hex):</label>
+            <input type="text" id="charIndex" value="F010">
+        </div>
+        <div id="cwii_va_settings">
+            <div class="input-group">
+                <label for="ne_00_input">NE_00 Address (hex):</label>
+                <input type="text" id="ne_00_input">
+                <label for="ne_fx_input">NE_Fx Address (hex):</label>
+                <input type="text" id="ne_fx_input">
+            </div>
+             <div class="input-group">
+                <input type="checkbox" id="ab_fix_checkbox"> VA Fix
+                <div id="va_fix_en" style="display:none;">
+                    <label for="va_f0_input">VA_F0 Address (hex):</label>
+                    <input type="text" id="va_f0_input">
+                    <label for="va_f1_input">VA_F1 Address (hex):</label>
+                    <input type="text" id="va_f1_input">
+                </div>
+            </div>
+        </div>
+        <div id="l8_settings" style="display:none;">
+            <div class="input-group">
+                <label for="l8_00_input">L8_00 Address (hex):</label>
+                <input type="text" id="l8_00_input">
+            </div>
+        </div>
+        <div id="la_settings" style="display:none;">
+             <div class="input-group">
+                <label for="la_00_input">LA_00 Address (hex):</label>
+                <input type="text" id="la_00_input">
+                <label for="la_fx_input">LA_Fx Address (hex):</label>
+                <input type="text" id="la_fx_input">
+            </div>
+        </div>
+        <div class="input-group">
+            <button id="autoDetectButton">Auto-detect Addresses</button>
+            <button id="previewButton">Preview Character</button>
+        </div>
+        <div>
+            <canvas id="fontCanvas" width="11" height="13"></canvas>
+        </div>
+        <div class="input-group">
+            <button id="importButton">Import PNG</button>
+            <input type="file" id="pngFile" style="display:none;">
+            <button id="exportButton">Export PNG</button>
+        </div>
+        <div class="input-group">
+            <button id="saveRomButton">Save ROM</button>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
