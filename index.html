@@ -193,6 +193,32 @@
         </div>
         <pre id="kbdPatcherLog" style="background-color: #eee; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll;"></pre>
 
+        <hr>
+
+        <h2>ROM Information</h2>
+        <div class="input-group">
+            <label for="romDbFile">Load ROM Database (`.bin`):</label>
+            <input type="file" id="romDbFile" accept=".bin">
+        </div>
+        <div class="input-group">
+            <label for="romDbKey">Search Key:</label>
+            <input type="text" id="romDbKey">
+            <button id="searchRomDbButton">Search</button>
+        </div>
+        <div class="input-group">
+            <label>Result:</label>
+            <pre id="romDbResult" style="background-color: #eee; border: 1px solid #ccc; padding: 10px; min-height: 20px;"></pre>
+        </div>
+
+        <hr>
+
+        <h2>ROM Checksum Calculator</h2>
+        <div class="input-group">
+            <button id="calculateChecksumButton">Calculate Checksum</button>
+            <button id="patchChecksumButton" style="display:none;">Patch Checksum to ROM</button>
+        </div>
+        <pre id="checksumResultLog" style="background-color: #eee; border: 1px solid #ccc; padding: 10px; min-height: 100px;"></pre>
+
     </div>
 
     <!-- Modal for editing a menu item -->

@@ -177,6 +177,275 @@ function get(bs, index, width, height) {
     }
 }
 
+// =================================================================
+// Checksum Calculator
+// =================================================================
+
+let checksumResult = {};
+
+const checksumLog = (message) => {
+    document.getElementById('checksumResultLog').textContent += message + '\n';
+};
+
+// JavaScript equivalent of the C++ `calc` function (word-based)
+function calc_js(sum, view, length) {
+    for (let i = 0; i < length; i += 2) {
+        sum -= view.getUint16(i, true); // true for little-endian
+    }
+    return sum;
+}
+
+// JavaScript equivalent of the C++ `calc2` function (byte-based)
+function calc2_js(sum, view, length) {
+    for (let i = 0; i < length; i++) {
+        sum -= view.getUint8(i);
+    }
+    return sum;
+}
+
+function calculateChecksum() {
+    if (!rom) {
+        throw new Error("ROM not loaded.");
+    }
+    document.getElementById('checksumResultLog').textContent = ''; // Clear log
+
+    const view = new DataView(rom.buffer);
+    const textDecoder = new TextDecoder('utf-8');
+
+    let ver = '';
+    let dsum_location = 0;
+    let desired_sum = 0;
+    let real_sum = 0;
+    let sum_type = 'Unk';
+
+    const spinit = view.getUint16(0, true);
+
+    if (spinit === 0xf000) { // CWX or CWII
+        if (rom.length < 0x40000) throw new Error("ROM must be at least 0x40000 for CWX/CWII.");
+        if (rom.length === 0x40000) { // CWX
+            sum_type = 'CWX';
+            ver = textDecoder.decode(rom.subarray(0x3ffee, 0x3ffee + 8));
+            dsum_location = 0x3fff6;
+            desired_sum = view.getUint16(dsum_location, true);
+        } else { // CWII
+            sum_type = 'CWII';
+             if (rom.length < 0x60000) throw new Error("ROM must be at least 0x60000 for CWII.");
+            // Handle memory copy for calculation
+            if (rom[0x5ffee] === 0xff || rom[0x5ffee] === 0) {
+                 if (rom.length < 0x80000) throw new Error("Rom need to be 0x80000 at least.");
+                 rom.set(rom.subarray(0x70000, 0x70000 + 0x2000), 0x5e000);
+            }
+            ver = textDecoder.decode(rom.subarray(0x5ffee, 0x5ffee + 8));
+            dsum_location = 0x5fff6;
+            desired_sum = view.getUint16(dsum_location, true);
+        }
+    } else if (spinit === 0x8dfe || spinit === 0x8e00) {
+        throw new Error("ES ROMs do not have a checksum.");
+    } else if (spinit === 0x8dec || spinit === 0x8df2) {
+        sum_type = 'ESP1';
+        if (rom.length < 0x20000) throw new Error("ROM must be at least 0x20000 for ESP1.");
+        ver = textDecoder.decode(rom.subarray(0x1fff4, 0x1fff4 + 8));
+        dsum_location = 0x1fffc;
+        desired_sum = view.getUint16(dsum_location, true);
+    } else if (spinit === 0x8dea) {
+        sum_type = 'ESP2';
+        if (rom.length < 0x20000) throw new Error("ROM must be at least 0x20000 for ESP2.");
+        ver = textDecoder.decode(rom.subarray(0x1fff4, 0x1fff4 + 8));
+        dsum_location = 0x1fffc;
+        desired_sum = view.getUint16(dsum_location, true);
+    }
+
+    switch (sum_type) {
+        case 'ESP1':
+            real_sum = calc2_js(real_sum, new DataView(rom.buffer, 0), 0x10000);
+            real_sum = calc2_js(real_sum, new DataView(rom.buffer, 0x10000), 0xfffc);
+            break;
+        case 'ESP2':
+            real_sum = calc2_js(real_sum, new DataView(rom.buffer, 0), 0x10000);
+            real_sum = calc2_js(real_sum, new DataView(rom.buffer, 0x10000), 0xff40);
+            real_sum = calc2_js(real_sum, new DataView(rom.buffer, 0x1ffd0), 0x2c);
+            break;
+        case 'CWX':
+            real_sum = calc_js(real_sum, new DataView(rom.buffer, 0), 0xfc00);
+            real_sum = calc_js(real_sum, new DataView(rom.buffer, 0x10000), 0x2fff6);
+            break;
+        case 'CWII':
+            real_sum = calc_js(real_sum, new DataView(rom.buffer, 0), 0xfc00);
+            real_sum = calc_js(real_sum, new DataView(rom.buffer, 0x10000), 0x4fff6);
+            break;
+        default:
+            throw new Error("Unknown ROM type for checksum calculation.");
+    }
+
+    // Mask to 16 bits to match C++ unsigned short behavior
+    real_sum &= 0xFFFF;
+
+    return { romType: sum_type, version: ver, desiredSum: desired_sum, realSum: real_sum, dsumLocation: dsum_location };
+}
+
+document.getElementById('calculateChecksumButton').addEventListener('click', function() {
+    try {
+        checksumResult = calculateChecksum();
+        displayChecksumResult(checksumResult);
+        document.getElementById('patchChecksumButton').style.display = 'inline-block';
+    } catch (e) {
+        checksumLog(`Error: ${e.message}`);
+        document.getElementById('patchChecksumButton').style.display = 'none';
+    }
+});
+
+function displayChecksumResult(result) {
+    const { romType, version, desiredSum, realSum } = result;
+
+    const toHex = (num) => num.toString(16).toUpperCase().padStart(4, '0');
+
+    let output = '';
+    if (romType === 'CWII') {
+        const ver_o = version.substring(0, 6);
+        const ver_o2 = version.substring(6, 8);
+        output += `${ver_o}\n`;
+        output += `V.${ver_o2} Bt OK\n`;
+        output += `SUM${toHex(realSum)} ${realSum === desiredSum ? "OK" : "NG"}\n`;
+        output += `Press AC\n`;
+    } else {
+        const ver_o_part1 = version.substring(0, 6);
+        const ver_o_part2 = version.substring(6, 8);
+        output += `${ver_o_part1} Ver${ver_o_part2}\n`;
+        output += `SUM ${toHex(realSum)} ${realSum === desiredSum ? "OK" : "NG"}`;
+        if (romType === 'ESP2') {
+            output += " ID--";
+        }
+        output += "\n";
+        if (romType === 'CWX') {
+            output += "P00 Read OK\n";
+        } else {
+            output += "Pd- Read OK\n";
+        }
+    }
+
+    checksumLog(output);
+    checksumLog(`\n--- Calculation Details ---`);
+    checksumLog(`Desired Sum: ${toHex(desiredSum)}`);
+    checksumLog(`Real Sum:    ${toHex(realSum)}`);
+}
+
+document.getElementById('patchChecksumButton').addEventListener('click', function() {
+    if (!checksumResult.dsumLocation) {
+        checksumLog("No checksum result available to patch.");
+        return;
+    }
+
+    try {
+        const { dsumLocation, realSum, romType } = checksumResult;
+        const view = new DataView(rom.buffer);
+
+        view.setUint16(dsumLocation, realSum, true); // true for little-endian
+
+        if (romType === 'CWII') {
+            if (rom.length < 0x80000) {
+                 // The original C++ code resizes the vector. In JS, we can't resize an ArrayBuffer.
+                 // We'll assume the buffer is large enough or was handled during load.
+                 // For safety, we'll just check.
+                 throw new Error("ROM is not 0x80000 bytes, cannot perform CWII memory copy.");
+            }
+            // Mirror the data block
+            rom.set(rom.subarray(0x5e000, 0x5e000 + 0x2000), 0x70000);
+            checksumLog("CWII memory block mirrored from 0x5e000 to 0x70000.");
+        }
+
+        checksumLog(`\nChecksum patched at 0x${dsumLocation.toString(16).toUpperCase()} with value ${realSum.toString(16).toUpperCase().padStart(4,'0')}.`);
+        checksumLog("You can now save the ROM.");
+        document.getElementById('patchChecksumButton').style.display = 'none';
+
+    } catch (e) {
+        checksumLog(`Error during patching: ${e.message}`);
+    }
+});
+
+// =================================================================
+// ROM Information
+// =================================================================
+
+let romDb = new Map();
+
+document.getElementById('romDbFile').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            parseRomDb(e.target.result);
+            alert(`ROM Database loaded with ${romDb.size} entries.`);
+        } catch (error) {
+            alert("Failed to parse ROM Database: " + error.message);
+            console.error(error);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+function parseRomDb(arrayBuffer) {
+    romDb.clear();
+    const view = new DataView(arrayBuffer);
+    const textDecoder = new TextDecoder('utf-8');
+
+    // The Python script uses 'Q' which is an 8-byte unsigned long long.
+    // JavaScript's DataView can read 64-bit integers with getBigUint64.
+    const objectCount = view.getBigUint64(0, true); // true for little-endian
+    let offset = 8;
+
+    for (let i = 0; i < objectCount; i++) {
+        if (offset + 16 > arrayBuffer.byteLength) {
+            throw new Error("Database file is truncated or corrupt (header).");
+        }
+
+        // Read key (8-byte padded string)
+        const keyBytes = new Uint8Array(arrayBuffer, offset, 8);
+        // Find the first null terminator to get the actual key length
+        const firstNull = keyBytes.indexOf(0);
+        const key = textDecoder.decode(keyBytes.slice(0, firstNull === -1 ? 8 : firstNull));
+        offset += 8;
+
+        // Read name length (8 bytes)
+        const nameLength = view.getBigUint64(offset, true);
+        offset += 8;
+
+        if (offset + Number(nameLength) > arrayBuffer.byteLength) {
+            throw new Error(`Database file is truncated or corrupt (entry for key: ${key}).`);
+        }
+
+        // Read name string
+        const nameBytes = new Uint8Array(arrayBuffer, offset, Number(nameLength));
+        const name = textDecoder.decode(nameBytes);
+        offset += Number(nameLength);
+
+        romDb.set(key, name);
+    }
+}
+
+document.getElementById('searchRomDbButton').addEventListener('click', function() {
+    const key = document.getElementById('romDbKey').value;
+    const resultEl = document.getElementById('romDbResult');
+
+    if (romDb.size === 0) {
+        resultEl.textContent = "Database not loaded.";
+        return;
+    }
+
+    if (!key) {
+        resultEl.textContent = "Please enter a key to search.";
+        return;
+    }
+
+    const result = romDb.get(key);
+    if (result !== undefined) {
+        resultEl.textContent = result;
+    } else {
+        resultEl.textContent = "Key not found.";
+    }
+});
+
 function lookupTable(ind) {
     const view = new DataView(rom.buffer);
     if (font_type !== 0) {
