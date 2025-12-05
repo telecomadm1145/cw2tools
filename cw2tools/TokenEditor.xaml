@@ -1,89 +1,89 @@
-﻿<Window x:Class="cw2tools.TokenEditor"
+<Window x:Class="cw2tools.TokenEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="Token Editor" Height="600" Width="800">
-    <DockPanel LastChildFill="True">
+        Title="Token Editor" Height="600" Width="900"
+        Background="{StaticResource BackgroundColor}">
+
+    <DockPanel LastChildFill="True" Margin="10">
+        <!-- Header -->
+        <TextBlock DockPanel.Dock="Top" Text="Token 编辑器" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" Foreground="{StaticResource HeadingColor}"/>
+
         <!-- Buttons at the Top -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
-            <Button Content="自动搜索 (Load)" HorizontalAlignment="Left" Click="SearchButton_Click" Margin="0,0,10,0" Padding="10,2"/>
-            <Button Content="保存CSV (Save)" HorizontalAlignment="Left" Click="SaveRefreshButton_Click" Padding="10,2"/>
-            <!-- Add a Refresh Button if needed -->
-            <!-- <Button Content="刷新 (Refresh)" HorizontalAlignment="Left" Click="RefreshButton_Click" Margin="10,0,0,0" Padding="10,2"/> -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="自动搜索 (Load)" Click="SearchButton_Click" Padding="15,6" Margin="0,0,10,0"/>
+            <Button Content="保存CSV (Save)" Click="SaveRefreshButton_Click" Padding="15,6"/>
         </StackPanel>
 
-        <!-- Status Bar at the Bottom (Optional) -->
-        <StatusBar DockPanel.Dock="Bottom">
+        <!-- Status Bar at the Bottom -->
+        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource SurfaceColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0" Padding="5">
             <StatusBarItem>
-                <!-- Can bind this to a property showing number of items or status -->
-                <TextBlock Text="{Binding DisplayTokens.Count, StringFormat={}{0} items loaded}"/>
+                <TextBlock Text="{Binding DisplayTokens.Count, StringFormat={}{0} items loaded}" Foreground="{StaticResource TextColor}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Text="* = modified"/>
+                <TextBlock Text="* = modified" Foreground="{StaticResource TextColor}"/>
             </StatusBarItem>
         </StatusBar>
 
         <!-- ListView filling the remaining space -->
         <ListView x:Name="TokenListView"
                   ItemsSource="{Binding DisplayTokens}"
-                Margin="5"
+                  Margin="0,0,0,0"
+                  BorderThickness="1"
+                  BorderBrush="{StaticResource BorderColor}"
                   AlternationCount="2">
-            <!-- For alternating row colors -->
 
             <ListView.Resources>
                 <!-- Style for alternating row background -->
                 <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Style.Triggers>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
                             <Setter Property="Background" Value="White"/>
                         </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="#F9F9F9"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#E3F2FD"/>
+                            <Setter Property="BorderBrush" Value="#2196F3"/>
+                        </Trigger>
                     </Style.Triggers>
-                </Style>
-                <!-- Style for highlighting modified rows (Optional) -->
-                <Style TargetType="{x:Type TextBlock}" x:Key="ModifiedMarkerStyle">
-                    <Setter Property="Foreground" Value="Red"/>
-                    <Setter Property="FontWeight" Value="Bold"/>
-                    <Setter Property="ToolTip" Value="Modified"/>
                 </Style>
             </ListView.Resources>
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Mod" Width="30">
+                    <GridViewColumn Header="Mod" Width="40">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <!-- Display '*' if modified -->
-                                <TextBlock Text="{Binding DisplayStatus}" HorizontalAlignment="Center"/>
-                                <!-- Optional: Use Style Trigger based on IsModified -->
-                                <!--<TextBlock Text="*">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsModified}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Setter Property="Foreground" Value="Red"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>-->
+                                <TextBlock Text="{Binding DisplayStatus}" HorizontalAlignment="Center" FontWeight="Bold" Foreground="#E74C3C"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding CodePointHex}"/>
+                    <GridViewColumn Header="Code" Width="80">
+                         <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CodePointHex}" FontFamily="Consolas"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
 
-                    <GridViewColumn Header="Hex" Width="400" DisplayMemberBinding="{Binding TextHex}"/>
+                    <GridViewColumn Header="Hex" Width="400">
+                         <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TextHex}" FontFamily="Consolas" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
 
-                    <GridViewColumn Header="Text" Width="200" DisplayMemberBinding="{Binding OriginalText}"/>
+                    <GridViewColumn Header="Text" Width="250" DisplayMemberBinding="{Binding OriginalText}"/>
 
-                    <!-- Add more columns if needed, e.g., Original Length -->
                     <GridViewColumn Header="Len" Width="50" DisplayMemberBinding="{Binding OriginalLength}"/>
-
                 </GridView>
             </ListView.View>
         </ListView>
