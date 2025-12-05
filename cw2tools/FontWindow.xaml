@@ -1,41 +1,40 @@
-﻿<Window x:Class="cw2tools.FontWindow"
+<Window x:Class="cw2tools.FontWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="字体工具" Height="550" Width="450" MinWidth="400" MinHeight="500"
-        FontSize="13">
-    <Grid Margin="10">
+        Title="FontWindow" Height="650" Width="400" MinWidth="350" MinHeight="600"
+        Background="{StaticResource BackgroundColor}">
+
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Font Type Selection -->
             <RowDefinition Height="Auto"/>
-            <!-- Font Specific Settings -->
             <RowDefinition Height="Auto"/>
-            <!-- Character Index -->
             <RowDefinition Height="Auto"/>
-            <!-- Preview -->
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <!-- Actions -->
         </Grid.RowDefinitions>
 
+        <!-- Header -->
+        <TextBlock Text="字体编辑器" FontSize="20" FontWeight="Bold" Margin="0,0,0,15" Foreground="{StaticResource HeadingColor}"/>
+
         <!-- 1. Font Type Selection -->
-        <GroupBox Header="字体类型" Grid.Row="0" Padding="5" Margin="0,0,0,10">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <RadioButton x:Name="NormalFont_CB" Tag="0" Content="普通字体 14 (0xE)" Checked="RadioButton_Checked" IsChecked="True" Margin="0,0,15,0"/>
-                <RadioButton x:Name="Little8_CB" Tag="1" Content="小字体 8" Checked="RadioButton_Checked" Margin="0,0,15,0"/>
-                <RadioButton x:Name="Little10_CB" Tag="2" Content="小字体 10 (0xA)" Checked="RadioButton_Checked"/>
+        <GroupBox Header="字体类型" Grid.Row="1">
+            <StackPanel Orientation="Vertical">
+                <RadioButton x:Name="NormalFont_CB" Tag="0" Content="普通字体 14 (0xE)" Checked="RadioButton_Checked" IsChecked="True" Margin="0,0,0,5" Foreground="{StaticResource TextColor}"/>
+                <RadioButton x:Name="Little8_CB" Tag="1" Content="小字体 8" Checked="RadioButton_Checked" Margin="0,0,0,5" Foreground="{StaticResource TextColor}"/>
+                <RadioButton x:Name="Little10_CB" Tag="2" Content="小字体 10 (0xA)" Checked="RadioButton_Checked" Foreground="{StaticResource TextColor}"/>
             </StackPanel>
         </GroupBox>
 
         <!-- 2. Font Specific Settings -->
-        <Grid Grid.Row="1" Margin="0,0,0,10">
-            <!-- Normal Font Settings -->
-            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
-                    Visibility="{Binding ElementName=NormalFont_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-                <StackPanel>
+        <GroupBox Header="参数设置" Grid.Row="2" Margin="0">
+            <StackPanel>
+                <!-- Normal Font Settings -->
+                <StackPanel Visibility="{Binding ElementName=NormalFont_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
                     <CheckBox x:Name="ABFix" Content="CNX V.A V.B 修复" Checked="ABFix_Checked" Unchecked="ABFix_Checked" Margin="0,0,0,10"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -48,8 +47,8 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
-                        <TextBox x:Name="NE_00_Input" Text="????" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
+                        <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                        <TextBox x:Name="NE_00_Input" Text="????" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
 
                         <!-- Non-Fix Panel -->
                         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Visible" x:Name="VAFixDis">
@@ -58,8 +57,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Fx:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
-                                <TextBox x:Name="NE_Fx_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
+                                <TextBlock Text="Fx:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox x:Name="NE_Fx_Input" Text="????" Grid.Column="1"/>
                             </Grid>
                         </StackPanel>
 
@@ -72,33 +71,27 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="F0:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBox x:Name="VA_F0_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
-                                <TextBlock Text="F1:" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBox x:Name="VA_F1_Input" Text="????" Grid.Column="3" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
+                                <TextBlock Text="F0:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox x:Name="VA_F0_Input" Text="????" Grid.Column="1" Margin="0,0,10,0"/>
+                                <TextBlock Text="F1:" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox x:Name="VA_F1_Input" Text="????" Grid.Column="3"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
-            </Border>
 
-            <!-- Little 8 Font Settings -->
-            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
-                    Visibility="{Binding ElementName=Little8_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-                <Grid>
+                <!-- Little 8 Font Settings -->
+                <Grid Visibility="{Binding ElementName=Little8_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="00:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="L8_00_Input" Text="????" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="00:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="L8_00_Input" Text="????" Grid.Column="1"/>
                 </Grid>
-            </Border>
 
-            <!-- Little 10 Font Settings -->
-            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Padding="10"
-                    Visibility="{Binding ElementName=Little10_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
-                <Grid>
+                <!-- Little 10 Font Settings -->
+                <Grid Visibility="{Binding ElementName=Little10_CB, Path=IsChecked, Converter={x:Static local:BoolToVisibilityConverter.DefaultInstance}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -107,52 +100,63 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,5"/>
-                    <TextBox x:Name="LA_00_Input" Text="????" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Margin="0,0,0,5"/>
-                    <TextBlock Text="Fx:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="LA_Fx_Input" Text="????" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="00:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBox x:Name="LA_00_Input" Text="????" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
+                    <TextBlock Text="Fx:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="LA_Fx_Input" Text="????" Grid.Row="1" Grid.Column="1"/>
                 </Grid>
-            </Border>
-        </Grid>
+            </StackPanel>
+        </GroupBox>
 
-        <!-- 3. Character Index -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11" Padding="10,2" Margin="0,0,15,0"/>
-            <TextBlock Text="字符代码:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox x:Name="IndexInput" Text="0" Width="80" VerticalContentAlignment="Center"/>
-            <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1" Margin="10,0,0,0" Padding="10,2"/>
-        </StackPanel>
+        <!-- 3. Character Index & Search -->
+        <GroupBox Header="查找与预览" Grid.Row="3">
+            <StackPanel>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="字符代码:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="IndexInput" Text="0" Grid.Column="1" Margin="0,0,10,0"/>
+                    <Button Content="加载预览" Grid.Column="2" Click="Button_Click_1" Width="80" Padding="0"/>
+                </Grid>
+                <Button Content="自动查找" Click="Button_Click_11" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </GroupBox>
 
-        <!-- 4. Preview -->
-        <GroupBox Header="预览" Grid.Row="3" Padding="5" Margin="0,0,0,10">
-            <Border BorderBrush="DarkGray" BorderThickness="1" Background="Gray" HorizontalAlignment="Left" Padding="20">
-                <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor" Height="128" Width="128" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <!-- 4. Preview Image -->
+        <GroupBox Header="图像" Grid.Row="4" VerticalAlignment="Stretch">
+            <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="1" Background="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10">
+                <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor" Height="64" Width="64" Stretch="Uniform"/>
             </Border>
         </GroupBox>
 
         <!-- 5. Actions -->
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <GroupBox Header="操作" Grid.Row="5" Margin="0,0,0,0">
+             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Text="单个字符操作:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0,0,0,5"/>
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
-                <Button Content="导出" HorizontalAlignment="Left" Click="Button_Click_2" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
-                <Button Content="替换" HorizontalAlignment="Left" Click="Button_Click_7" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
-            </StackPanel>
+                <TextBlock Text="单个字符:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <StackPanel Grid.Row="1" Grid.Column="0">
+                    <Button Content="导出" Click="Button_Click_2" Margin="0,0,0,5"/>
+                    <Button Content="替换" Click="Button_Click_7" Margin="0"/>
+                </StackPanel>
 
-            <TextBlock Text="全部字符操作:" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="0,0,0,5"/>
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
-                <Button Content="全部导出" HorizontalAlignment="Left" Click="Button_Click_8" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
-                <Button Content="全部替换" HorizontalAlignment="Left" Click="Button_Click_3" Margin="0,0,5,0" MinWidth="75" Padding="10,5"/>
-            </StackPanel>
-        </Grid>
+                <TextBlock Text="全部字符:" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <Button Content="全部导出" Click="Button_Click_8" Margin="0,0,0,5"/>
+                    <Button Content="全部替换" Click="Button_Click_3" Margin="0"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
 
     </Grid>
 </Window>
