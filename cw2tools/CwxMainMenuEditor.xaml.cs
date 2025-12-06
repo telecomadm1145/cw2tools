@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +19,7 @@ namespace cw2tools
     /// <summary>
     /// CwxMainMenuEditor.xaml 的交互逻辑
     /// </summary>
-    public unsafe partial class CwxMainMenuEditor : Window
+    public unsafe partial class CwxMainMenuEditor : UserControl
     {
         public CwxMainMenuEditor()
         {

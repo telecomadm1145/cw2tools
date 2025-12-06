@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -16,7 +16,7 @@ using static cw2tools.CasioInternal.Static;
 
 namespace cw2tools
 {
-    public unsafe partial class MainMenuEditor : Window
+    public unsafe partial class MainMenuEditor : UserControl
     {
         public MainMenuEditor()
         {

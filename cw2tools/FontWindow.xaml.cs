@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +18,7 @@ using static cw2tools.CasioInternal.Static;
 
 namespace cw2tools
 {
-    public unsafe partial class FontWindow : Window
+    public unsafe partial class FontWindow : UserControl
     {
         public FontWindow()
         {

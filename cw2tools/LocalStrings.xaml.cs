@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ namespace cw2tools
     /// <summary>
     /// LocalStrings.xaml 的交互逻辑
     /// </summary>
-    public unsafe partial class LocalStrings : Window
+    public unsafe partial class LocalStrings : UserControl
     {
         public LocalStrings()
         {

@@ -1,60 +1,109 @@
-﻿<Window x:Class="cw2tools.KbdEditor"
+<UserControl x:Class="cw2tools.KbdEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="KbdEditor" Height="600" Width="800">
-    <Grid>
-        <StackPanel>
-            <Button Content="自动搜索" HorizontalAlignment="Left" Click="Button_Click"/>
-            <TextBlock Text="按键基址(Alpha)"/>
-            <TextBox Text="??????"/>
-            <TextBlock Text="按键基址(Sto)"/>
-            <TextBox Text="??????"/>
-            <TextBlock Text="按键基址(Shift)"/>
-            <TextBox Text="??????"/>
-            <TextBlock Text="按键基址(一般)"/>
-            <TextBox Text="??????"/>
-            <StackPanel Orientation="Horizontal">
-                <RadioButton Content="Alpha"/>
-                <RadioButton Content="Sto"/>
-                <RadioButton Content="Shift"/>
-                <RadioButton Content="Normal"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <RadioButton Content="ES"/>
-                <RadioButton Content="ESP"/>
-                <RadioButton Content="CWX"/>
-                <RadioButton Content="CWII"/>
-            </StackPanel>
-            <Grid x:Name="Buttons" ShowGridLines="True" Width="256" Height="256">
+        Background="{StaticResource BackgroundColor}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="虚拟键盘编辑器" FontSize="22" FontWeight="Bold" Margin="0,0,0,20" Foreground="{StaticResource HeadingColor}"/>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+
+                <!-- Left Panel: Settings & Addresses -->
+                <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                    <Button Content="自动搜索" HorizontalAlignment="Stretch" Click="Button_Click" Margin="0,0,0,20" Padding="0,10"/>
+
+                    <GroupBox Header="按键基址">
+                        <StackPanel>
+                            <TextBlock Text="按键基址(Alpha)" Margin="0,0,0,5"/>
+                            <TextBox Text="??????" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="按键基址(Sto)" Margin="0,0,0,5"/>
+                            <TextBox Text="??????" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="按键基址(Shift)" Margin="0,0,0,5"/>
+                            <TextBox Text="??????" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="按键基址(一般)" Margin="0,0,0,5"/>
+                            <TextBox Text="??????"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="模式选择">
+                        <StackPanel>
+                            <TextBlock Text="按键类型:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <WrapPanel Margin="0,0,0,10">
+                                <RadioButton Content="Alpha" Margin="0,0,10,5" GroupName="Type"/>
+                                <RadioButton Content="Sto" Margin="0,0,10,5" GroupName="Type"/>
+                                <RadioButton Content="Shift" Margin="0,0,10,5" GroupName="Type"/>
+                                <RadioButton Content="Normal" GroupName="Type"/>
+                            </WrapPanel>
+
+                            <TextBlock Text="计算器型号:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <WrapPanel>
+                                <RadioButton Content="ES" Margin="0,0,10,5" GroupName="Model"/>
+                                <RadioButton Content="ESP" Margin="0,0,10,5" GroupName="Model"/>
+                                <RadioButton Content="CWX" Margin="0,0,10,5" GroupName="Model"/>
+                                <RadioButton Content="CWII" GroupName="Model"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="当前选择">
+                         <StackPanel>
+                            <TextBlock Text="按键对应代码:" Margin="0,0,0,5"/>
+                            <TextBox Text="????" Margin="0,0,0,10"/>
+                            <Button Content="修改" HorizontalAlignment="Stretch" Click="Button_Click"/> <!-- Assuming same handler for now, verify in cs -->
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+
+                <!-- Right Panel: Keyboard Grid -->
+                <GroupBox Grid.Column="1" Header="键盘布局">
+                    <Grid>
+                        <Viewbox Stretch="Uniform">
+                            <Grid x:Name="Buttons" ShowGridLines="False" Width="256" Height="256" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!-- Buttons are likely added programmatically in .cs -->
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
+                </GroupBox>
             </Grid>
-            <TextBlock Text="按键对应代码"/>
-            <TextBox Text="????"/>
-            
-            <Button Content="修改" HorizontalAlignment="Left"/>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
-</Window>
+</UserControl>

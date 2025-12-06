@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +17,7 @@ namespace cw2tools
     /// <summary>
     /// KbdEditor.xaml 的交互逻辑
     /// </summary>
-    public unsafe partial class KbdEditor : Window
+    public unsafe partial class KbdEditor : UserControl
     {
         public KbdEditor()
         {

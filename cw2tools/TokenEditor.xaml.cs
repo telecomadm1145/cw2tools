@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel; // Added
 using System.ComponentModel;         // Added
@@ -19,7 +19,7 @@ namespace cw2tools
     /// <summary>
     /// Interaction logic for TokenEditor.xaml
     /// </summary>
-    public unsafe partial class TokenEditor : Window
+    public unsafe partial class TokenEditor : UserControl
     {
         // --- Helper Class for Data Binding ---
         public class DisplayToken(int codePoint, TokenEditor.Token token) : INotifyPropertyChanged
@@ -157,7 +157,7 @@ namespace cw2tools
                 else
                 {
                     // Optionally, update status or title
-                    Title = $"Token Editor - {DisplayTokens.Count} tokens loaded";
+                    //Title = $"Token Editor - {DisplayTokens.Count} tokens loaded";
                 }
 
             }

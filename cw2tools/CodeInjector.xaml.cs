@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +17,7 @@ namespace cw2tools
     /// <summary>
     /// CodeInjector.xaml 的交互逻辑
     /// </summary>
-    public partial class CodeInjector : Window
+    public partial class CodeInjector : UserControl
     {
         public CodeInjector()
         {

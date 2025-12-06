@@ -1,46 +1,123 @@
-﻿<Window x:Class="cw2tools.CwxMainMenuEditor"
+<UserControl x:Class="cw2tools.CwxMainMenuEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cw2tools"
         mc:Ignorable="d"
-        Title="CwxMainMenuEditor" Height="450" Width="800">
-    <StackPanel>
-        <TextBlock Text="图标基址:"/>
-        <TextBox x:Name="MenuBase1Input" Text="????"/>
-        <TextBlock Text="文本基址:"/>
-        <TextBox x:Name="MenuBase2Input" Text="????"/>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="自动查找" HorizontalAlignment="Left" Click="Button_Click_11"/>
-        </StackPanel>
-        <TextBlock Text="图标索引:"/>
-        <TextBox x:Name="IndexInput" Text="0"/>
-        <TextBlock Text="语言:"/>
-        <TextBox x:Name="LanguageInput" Text="1"/>
-        <Button Content="加载预览" HorizontalAlignment="Left" Click="Button_Click_1"/>
-        <TextBlock Text="预览:"/>
-        <Grid Height="48" HorizontalAlignment="Left">
-            <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-        </Grid>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="位图偏移"/>
-            <TextBox Text="????" Width="100" x:Name="BitmapOffset0"/>
-            <Button Content="修改" Click="Button_Click_4"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="文本位图偏移"/>
-            <TextBox Text="????" Width="100" x:Name="BitmapOffset2"/>
-            <Button Content="修改" Click="Button_Click_6"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="模式"/>
-            <TextBox Text="??" Width="100" x:Name="ModeInput"/>
-            <Button Content="修改" Click="Button_Click_2"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="导出 (48*24)" HorizontalAlignment="Left" Click="Button_Click_8"/>
-            <Button Content="替换 (48*24)" HorizontalAlignment="Left" Click="Button_Click_7"/>
-        </StackPanel>
-    </StackPanel>
-</Window>
+        Background="{StaticResource BackgroundColor}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="CWX 主菜单编辑器" FontSize="22" FontWeight="Bold" Margin="0,0,0,20" Foreground="{StaticResource HeadingColor}"/>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column -->
+                <StackPanel Grid.Column="0">
+                    <GroupBox Header="基础地址">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="图标基址:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox x:Name="MenuBase1Input" Text="????" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="文本基址:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox x:Name="MenuBase2Input" Text="????" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10"/>
+
+                            <Button Content="自动查找" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Click="Button_Click_11" Padding="15,4"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="加载与预览">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="图标索引:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox x:Name="IndexInput" Text="0" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="语言:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox x:Name="LanguageInput" Text="1" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10"/>
+
+                            <Button Content="加载预览" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Click="Button_Click_1" Padding="15,4"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="位图与模式">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="位图偏移:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox Text="????" x:Name="BitmapOffset0" Grid.Row="0" Grid.Column="1" Margin="0,0,10,10"/>
+                            <Button Content="修改" Click="Button_Click_4" Grid.Row="0" Grid.Column="2" Padding="10,4" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="文本位图偏移:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                            <TextBox Text="????" x:Name="BitmapOffset2" Grid.Row="1" Grid.Column="1" Margin="0,0,10,10"/>
+                            <Button Content="修改" Click="Button_Click_6" Grid.Row="1" Grid.Column="2" Padding="10,4" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="模式:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBox Text="??" x:Name="ModeInput" Grid.Row="2" Grid.Column="1" Margin="0,0,10,0"/>
+                            <Button Content="修改" Click="Button_Click_2" Grid.Row="2" Grid.Column="2" Padding="10,4"/>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+
+                <!-- Right Column -->
+                <StackPanel Grid.Column="1" Width="300" Margin="20,0,0,0">
+                    <GroupBox Header="预览">
+                        <Border Background="#E0E0E0" Padding="10" HorizontalAlignment="Center">
+                             <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                 <Grid Height="48" HorizontalAlignment="Center">
+                                    <Image x:Name="PreviewImage" RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Uniform"/>
+                                </Grid>
+                             </Border>
+                        </Border>
+                    </GroupBox>
+
+                    <GroupBox Header="导出与替换">
+                        <StackPanel>
+                            <Button Content="导出 (48*24)" Click="Button_Click_8" Margin="0,0,0,10"/>
+                            <Button Content="替换 (48*24)" Click="Button_Click_7"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
